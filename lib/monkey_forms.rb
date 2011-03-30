@@ -1,7 +1,6 @@
-require 'active_model'
-
 module MonkeyForms
-  require 'validation_scope'
+  require 'monkey_forms/validation_scope'
+  require 'active_model'
 
   module Form
 
