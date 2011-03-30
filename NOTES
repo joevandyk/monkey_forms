@@ -1,0 +1,4 @@
+ActiveModel::Validator seems to depend on 
+ActiveSupport::Callbacks? 
+Got undefined method `extlib_inheritable_reader'
+when I included ActiveModel into a class.

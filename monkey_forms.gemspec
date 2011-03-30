@@ -8,12 +8,14 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Joe Van Dyk"]
   s.email       = ["joe@tanga.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/joevandyk/monkey_forms"
   s.summary     = %q{Helps make complex forms}
   s.description = %q{Helps make complex forms}
 
   s.rubyforge_project = "monkey_forms"
   s.add_dependency('activemodel', '>= 3.0.5')
+  s.add_development_dependency 'minitest'
+
 
 
   s.files         = `git ls-files`.split("\n")
