@@ -1,11 +1,11 @@
 Monkey Forms Overview
 
-For each of your html forms, you'd define a form handling class
-and include the Joe::Rocks::FormStuff module into it.
+# TODO Rewrite this so that it makes sense.
 
-This class is an interface / layer between ActionController
+MonkeyForms::Form is an interface / layer between ActionController
 and your Models (or whatever you are saving the data to).
 You could just send an email after they submit the form.
+Your views also access the form object.
 
 After you submit the form, the values you submit are put
 into a gzip'd encoded cookie with json in it.
@@ -22,11 +22,7 @@ We use the standard ActiveModel::Validator stuff.  The
 validation_scopes allows us to scope validations, so
 we'd only run the validations for certain attributes.
 
-ActiveModel would be the only dependency, by the way.
-
-The other files in this project are a taste of what
-this could look like.  Still looking for a good project
-name, by the way.
+ActiveModel should be the only dependency.
 
 This is pretty similar to the Presenter Pattern as described
 by Jay Fields, by the way. http://blog.jayfields.com/2007/03/rails-presenter-pattern.html
