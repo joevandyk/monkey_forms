@@ -12,14 +12,22 @@ module MonkeyForms
     end
 
     module InstanceMethods
-      def initialize attrs={}
+      def initialize options = {}
+        attrs   = options.delete(:form)    || {}
+        @cookie = options.delete(:storage) || {}
+
         # TODO handle properly (encode, gzip, etc)
-        @cookie     = attrs.delete(self.class.cookie_name.to_sym) || {}
         @attributes = @cookie
 
         attrs.each do |name, value|
           @attributes[name.to_sym] = value
         end
+      end
+
+      private
+
+      def attributes
+        @attributes
       end
     end
 
@@ -37,6 +45,8 @@ module MonkeyForms
 
       def form_attributes *attrs
         attrs.each do |attr|
+
+          # Defines public method
           define_method attr do
             @attributes[attr]
           end
