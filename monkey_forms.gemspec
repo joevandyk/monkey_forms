@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.description = %q{Helps make complex forms}
 
   s.rubyforge_project = "monkey_forms"
-  s.add_dependency('activemodel', '>= 3.0.5')
+  s.add_dependency('activemodel')
   s.add_development_dependency 'minitest'
 
 
