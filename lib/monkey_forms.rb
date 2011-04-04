@@ -1,6 +1,8 @@
 module MonkeyForms
   require 'monkey_forms/validation_scope'
   require 'active_model'
+  require 'active_support/json'
+  require 'zlib'
 
   module Form
 
@@ -13,21 +15,29 @@ module MonkeyForms
 
     module InstanceMethods
       def initialize options = {}
-        attrs   = options.delete(:form)    || {}
-        @cookie = options.delete(:storage) || {}
+        attrs     = options.delete(:form)    || {}
+        @response = options.delete(:response)
+        cookie   = options.delete(:storage) || {}
 
-        # TODO handle properly (encode, gzip, etc)
-        @attributes = @cookie
+        @attributes = {}
+
+        if cookie.present?
+          cookie_hash = ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie))
+          cookie_hash.each do |key, value|
+            @attributes[key.to_s] = value
+          end
+        end
 
         attrs.each do |name, value|
-          @attributes[name.to_sym] = value
+          @attributes[name.to_s] = value
         end
       end
 
-      private
-
-      def attributes
-        @attributes
+      def save_to_storage!
+        cookie_json = @attributes.to_json
+        cookie_json = Zlib::Deflate.deflate(cookie_json, Zlib::BEST_COMPRESSION)
+        cookie_hash = { :value => cookie_json }
+        @response.set_cookie("form_storage", cookie_hash)
       end
     end
 
@@ -48,7 +58,7 @@ module MonkeyForms
 
           # Defines public method
           define_method attr do
-            @attributes[attr]
+            @attributes[attr.to_s]
           end
         end
       end

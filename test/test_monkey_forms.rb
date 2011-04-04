@@ -55,32 +55,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal [], o.errors[:email]
   end
 
-  def test_basic_cookie
-    # Some Rails cookie thingy w/ email set
-    # TODO figure out how to properly test this with ActionPack's cookies
-    cookie = create_cookie :email => "joe@tanga.com"
-    o = OrderForm.new :form => { :name => "Joe" }, :storage => cookie
-
-    assert_equal "Joe", o.name
-    assert_equal "joe@tanga.com", o.email
-  end
-
-  def test_form_overrides_cookie
-    cookie = create_cookie :email => "joe@tanga.com"
-    o = OrderForm.new :form => { :email => "joe@domain.com" }, :storage => cookie
-
-    assert_equal "joe@domain.com", cookie[:email]
-    assert_equal "joe@domain.com", o.email
-  end
-
-  # TODO this should create an actual cookie
-  def create_cookie options
-    {}.merge!(options)
-  end
-
   def test_can_access_attributes
     o = OrderForm.new :form => { :email => "joe@tanga.com" , :name => "Joe" }
     assert_equal "Joe <joe@tanga.com>", o.person
   end
 end
-

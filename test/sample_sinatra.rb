@@ -11,17 +11,13 @@ class SampleSinatra < Sinatra::Base
   end
 
   post "/form" do
-    OrderForm.new(:form => request.params["form"])
+    form = OrderForm.new(:form     => request.params["form"],
+                         :storage  => request.cookies["form_storage"],
+                         :response => response)
     # TODO save to cookie
-    # save_form(form)
+    form.save_to_storage!
     form.person
   end
 
-  def load_form
-  end
-
-  def save_form(form)
-    # TODO write me
-  end
 end
 

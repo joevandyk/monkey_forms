@@ -14,7 +14,7 @@ class OrderForm
 
   # This is a method that uses the form attributes.
   def person
-    "#{ attributes[:name] } <#{ attributes[:email] }>"
+    "#{ name } <#{ email }>"
   end
 end
 
