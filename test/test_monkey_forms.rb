@@ -1,6 +1,62 @@
 require 'rubygems'
 require 'minitest/autorun'
 require 'monkey_forms'
+require 'rack/test'
+require 'sinatra/base'
+
+ENV['RACK_ENV'] = 'test'
+
+
+=begin
+ # Sample Controller class that uses this.
+ # TODO add a test for this.
+ class OrdersController < ActionController::Base
+   before_filter :load_form
+   after_filter  :save_form
+
+   def cart
+   end
+
+   def shipping
+   end
+
+   private
+
+   def load_form
+     @form = OrderForm.new(:form    => params[:form],
+                           :storage => cookies['order_cookie'])
+   end
+
+   def save_form
+     @form.save_to_storage!
+   end
+ end
+=end
+
+class TestApp < Sinatra::Base
+  set :show_exceptions, false
+
+  # Sets a cookie
+  # Just for testing stuff.  Will probably be removed later.
+  get "/" do
+    response.set_cookie("hello", "#{ request.cookies["hello"] }world!")
+    "Hello world!"
+  end
+
+  post "/form" do
+    form = load_form
+    save_form(form)
+    form.person
+  end
+
+  def load_form
+    OrderForm.new(:form => request.params["form"])
+  end
+
+  def save_form(form)
+    # TODO write me
+  end
+end
 
 class OrderForm
   include MonkeyForms::Form
@@ -20,28 +76,32 @@ class OrderForm
   end
 end
 
-=begin
- # Sample Controller class that uses this.
- # TODO add a test for this.
- class OrdersController < ActionController::Base
-   before_filter :load_form
-
-   def cart
-   end
-
-   def shipping
-   end
-
-   private
-
-   def load_form
-     @form = OrderForm.new(:form    => params[:form],
-                           :storage => cookies['order_cookie'])
-   end
- end
-=end
-
 class TestMonkeyForms < MiniTest::Unit::TestCase
+  include Rack::Test::Methods
+
+  def app
+    TestApp.new
+  end
+
+  # Sanity test, make sure all this rack cookie nonsense works properly.
+  def test_sample_get_with_cookie
+    get "/"
+    assert_equal "world!", rack_mock_session.cookie_jar["hello"]
+
+    get "/"
+    assert_equal "world!" * 2, rack_mock_session.cookie_jar["hello"]
+
+    get "/"
+    assert_equal "world!" * 3, rack_mock_session.cookie_jar["hello"]
+  end
+
+  def test_form_post_with_cookie
+    post "/form", :form => { :name => "Joe" }
+    assert_equal "Joe <>", last_response.body
+    post "/form", :form => { :email => "joe@tanga.com" }
+    assert_equal "Joe <joe@tanga.com>", last_response.body
+  end
+
   def test_basic
     o = OrderForm.new :form => { :name => "Joe", :email => "joe@tanga.com" }
     assert_equal "Joe", o.name

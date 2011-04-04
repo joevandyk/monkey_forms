@@ -11,12 +11,13 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/joevandyk/monkey_forms"
   s.summary     = %q{Helps make complex forms}
   s.description = %q{Helps make complex forms}
-
   s.rubyforge_project = "monkey_forms"
+
   s.add_dependency('activemodel')
+
   s.add_development_dependency 'minitest'
-
-
+  s.add_development_dependency 'sinatra'
+  s.add_development_dependency 'rack-test'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
