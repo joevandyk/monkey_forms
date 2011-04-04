@@ -1,86 +1,15 @@
 require 'rubygems'
 require 'minitest/autorun'
-require 'monkey_forms'
 require 'rack/test'
-require 'sinatra/base'
 
-ENV['RACK_ENV'] = 'test'
-
-
-=begin
- # Sample Controller class that uses this.
- # TODO add a test for this.
- class OrdersController < ActionController::Base
-   before_filter :load_form
-   after_filter  :save_form
-
-   def cart
-   end
-
-   def shipping
-   end
-
-   private
-
-   def load_form
-     @form = OrderForm.new(:form    => params[:form],
-                           :storage => cookies['order_cookie'])
-   end
-
-   def save_form
-     @form.save_to_storage!
-   end
- end
-=end
-
-class TestApp < Sinatra::Base
-  set :show_exceptions, false
-
-  # Sets a cookie
-  # Just for testing stuff.  Will probably be removed later.
-  get "/" do
-    response.set_cookie("hello", "#{ request.cookies["hello"] }world!")
-    "Hello world!"
-  end
-
-  post "/form" do
-    form = load_form
-    save_form(form)
-    form.person
-  end
-
-  def load_form
-    OrderForm.new(:form => request.params["form"])
-  end
-
-  def save_form(form)
-    # TODO write me
-  end
-end
-
-class OrderForm
-  include MonkeyForms::Form
-  form_attributes :name, :email
-  form_storage    :cookie, :name => 'order_cookie'
-  # TODO add other tests for other form_storages options.
-
-  validates :email, :presence => true
-
-  validation_scope :cart_errors do |scope|
-    scope.validates :name, :presence => true
-  end
-
-  # This is a method that uses the form attributes.
-  def person
-    "#{ attributes[:name] } <#{ attributes[:email] }>"
-  end
-end
+require 'test/sample_sinatra'
+require 'test/order_form'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    TestApp.new
+    SampleSinatra.new
   end
 
   # Sanity test, make sure all this rack cookie nonsense works properly.
