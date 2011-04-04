@@ -1,8 +1,8 @@
 module MonkeyForms
   require 'monkey_forms/validation_scope'
   require 'active_model'
-  require 'active_support/json'
-  require 'zlib'
+
+  autoload :GzipCookie, 'monkey_forms/gzip_cookie'
 
   module Form
 
@@ -15,42 +15,31 @@ module MonkeyForms
 
     module InstanceMethods
       def initialize options = {}
-        attrs     = options.delete(:form)    || {}
-        @response = options.delete(:response)
-        cookie   = options.delete(:storage) || {}
+        form_params = options.delete(:form) || {}
+        @options    = options
+
+        # Load the saved form from storage
+        hash = self.class.form_storage.load(@options)
+
+        # Merge in this form's params
+        hash.merge!(form_params.stringify_keys)
 
         @attributes = {}
-
-        if cookie.present?
-          cookie_hash = ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie))
-          cookie_hash.each do |key, value|
-            @attributes[key.to_s] = value
-          end
-        end
-
-        attrs.each do |name, value|
-          @attributes[name.to_s] = value
+        hash.each do |key, value|
+          @attributes[key.to_s] = value
         end
       end
 
       def save_to_storage!
-        cookie_json = @attributes.to_json
-        cookie_json = Zlib::Deflate.deflate(cookie_json, Zlib::BEST_COMPRESSION)
-        cookie_hash = { :value => cookie_json }
-        @response.set_cookie("form_storage", cookie_hash)
+        @options[:attributes] = @attributes
+        self.class.form_storage.save(@options)
       end
     end
 
     module ClassMethods
-      attr_reader :cookie_name
-
-      def form_storage storage_type, options={}
-        case storage_type
-        when :cookie
-          @cookie_name = options.delete(:name) || 'monkey_form_cookie'
-        else
-          raise ArgumentError.new "Unknown storage type picked"
-        end
+      attr_reader :form_storage
+      def set_form_storage storage_object
+        @form_storage = storage_object
       end
 
       def form_attributes *attrs

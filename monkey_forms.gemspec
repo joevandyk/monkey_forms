@@ -16,8 +16,10 @@ Gem::Specification.new do |s|
   s.add_dependency('activemodel')
 
   s.add_development_dependency 'minitest'
+  s.add_development_dependency 'rake'
   s.add_development_dependency 'sinatra'
   s.add_development_dependency 'rack-test'
+  s.add_development_dependency 'json'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
