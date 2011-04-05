@@ -14,6 +14,8 @@ module MonkeyForms
     end
 
     module InstanceMethods
+      attr_reader :attributes
+
       def initialize options = {}
         form_params = options.delete(:form) || {}
         @options    = options
@@ -25,6 +27,11 @@ module MonkeyForms
         hash.merge!(form_params.stringify_keys)
 
         @attributes = {}
+
+        self.class.attributes.each do |a|
+          @attributes[a.to_s] = ""
+        end
+
         hash.each do |key, value|
           @attributes[key.to_s] = value
         end
@@ -37,13 +44,16 @@ module MonkeyForms
     end
 
     module ClassMethods
-      attr_reader :form_storage
+      attr_reader :form_storage, :attributes
+
       def set_form_storage storage_object
         @form_storage = storage_object
       end
 
       def form_attributes *attrs
+        @attributes ||= []
         attrs.each do |attr|
+          @attributes << attr
 
           # Defines public method
           define_method attr do

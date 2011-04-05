@@ -1,0 +1,25 @@
+%h1 Welcome to Monkey Forms Page #{ @page }
+
+%h3
+  %a{:href => "/"} Page 1
+  |
+  %a{:href => "/2"} Page 2
+  |
+  %a{:href => "/3"} Page 3
+
+%h3 Form Values
+= @form.attributes.inspect
+
+%p
+  As you click from page to page, note that your form
+  values are saved. They are saved in a cookie!
+
+%form{:action => '/haml_form', :method => 'post'}
+  - @form.class.attributes.each do |name|
+    %input{:type => 'text', :id => "form_#{name}", :name => "form[#{name}]", :value => @form.send(name)}
+    %label{:for => "form_#{name}"}= name
+
+    %br
+
+  %input{:type => 'submit'}
+

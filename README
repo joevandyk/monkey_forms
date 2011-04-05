@@ -7,9 +7,12 @@ and your Models (or whatever you are saving the data to).
 You could just send an email after they submit the form.
 Your views also access the form object.
 
-After you submit the form, the values you submit are put
+After you submit the form, the values you submit are serialized
 into a gzip'd encoded cookie with json in it.
 This allows us to access the stuff you entered earlier.
+
+How forms are serialized is configurable, by the way.  See 
+lib/monkey_forms/gzip_cookie.rb.
 
 When you submit the next form (or the same form again),
 the values you submit are merged into the already-submitted
@@ -22,10 +25,20 @@ We use the standard ActiveModel::Validator stuff.  The
 validation_scopes allows us to scope validations, so
 we'd only run the validations for certain attributes.
 
+The /test directory contains a sample Sinatra application that
+has a sample form.
+
 ActiveModel should be the only dependency.
 
 This is pretty similar to the Presenter Pattern as described
 by Jay Fields, by the way. http://blog.jayfields.com/2007/03/rails-presenter-pattern.html
+
+There is a sample sinatra application in test/sinatra.  Run with:
+cd test/sinatra
+rackup config.ru
+
+The validation stuff still needs work, but the form serializing seems to be
+solid.
 
 
 ??? WHY ???

@@ -2,7 +2,7 @@ require 'rubygems'
 require 'minitest/autorun'
 require 'rack/test'
 
-require 'test/sample_sinatra'
+require 'test/sinatra/sample_sinatra'
 require 'test/order_form'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
@@ -23,6 +23,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     o = OrderForm.new :form => { :name => "Joe", :email => "joe@tanga.com" }
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
+    assert_equal "", o.city
+    assert_equal 4, o.attributes.size
   end
 
   def test_validation
