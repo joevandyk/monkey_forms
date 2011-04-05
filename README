@@ -41,6 +41,44 @@ The validation stuff still needs work, but the form serializing seems to be
 solid.
 
 
+CODE SAMPLES
+class OrderForm
+  include MonkeyForms::Form
+  form_attributes :name, :address, :city, :state, :zip 
+  
+  # This might be set by default -- maybe the the below line wouldn't be needed
+  set_form_storage MonkeyForms::GzipCookie.new(:name => 'order_cookie')
+  
+  validates :name, :presence => true
+
+  def save
+    address = Address.new(:street => address, :city => city, :state => state, :zip => zip)
+    OrderService.place_order(:the_name => name, :address => address)
+    reset # clears out saved cookie
+  end
+end
+
+class OrderController < ActionController::Base
+  before_filter :load_form
+  def page1
+  end
+
+  def page2
+  end
+
+  private
+ 
+  def load_form
+    @form = OrderForm.new(:request => request, :response => self)
+  end
+end
+
+Your views can access @form.name, @form.address, etc.  It will be automatically saved as you
+go from page to page.
+
+Validation isn't shown in this example -- how validation works is still TBD.
+
+
 ??? WHY ???
 
 Moving the form logic to a separate class has a ton of advantages:
