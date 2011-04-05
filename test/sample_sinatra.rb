@@ -3,20 +3,26 @@ require 'sinatra/base'
 class SampleSinatra < Sinatra::Base
   set :show_exceptions, false
 
-  # Sets a cookie
-  # Just for testing stuff.  Will probably be removed later.
-  get "/" do
-    response.set_cookie("hello", "#{ request.cookies["hello"] }world!")
-    "Hello world!"
-  end
-
   post "/form" do
+    # Creates the form
     form = OrderForm.new(:form     => request.params["form"],
                          :request  => request,
                          :response => response)
 
+    # We could probably do something with the form object here, maybe
+    if form.valid?
+       # something
+    end
+
+    if form.no_cart_errors?
+      # something else
+    end
+
+    # Tells the form to serialize itself.
     form.save_to_storage!
-    form.person
+
+    # Returns something.
+    form.person # This returns "name <email>"
   end
 
 end

@@ -12,18 +12,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     SampleSinatra.new
   end
 
-  # Sanity test, make sure all this rack cookie nonsense works properly.
-  def test_sample_get_with_cookie
-    get "/"
-    assert_equal "world!", rack_mock_session.cookie_jar["hello"]
-
-    get "/"
-    assert_equal "world!" * 2, rack_mock_session.cookie_jar["hello"]
-
-    get "/"
-    assert_equal "world!" * 3, rack_mock_session.cookie_jar["hello"]
-  end
-
   def test_form_post_with_cookie
     post "/form", :form => { :name => "Joe" }
     assert_equal "Joe <>", last_response.body
