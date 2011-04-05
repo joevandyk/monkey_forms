@@ -66,6 +66,13 @@ class OrderController < ActionController::Base
   def page2
   end
 
+  def page3
+    if @form.valid?
+      @form.save
+      redirect 'somewhere'
+    end
+  end
+
   private
  
   def load_form
@@ -74,7 +81,7 @@ class OrderController < ActionController::Base
 end
 
 Your views can access @form.name, @form.address, etc.  It will be automatically saved as you
-go from page to page.
+go from page to page.  @form behaves just like a standard ActiveRecord / ActiveModel object.
 
 Validation isn't shown in this example -- how validation works is still TBD.
 
