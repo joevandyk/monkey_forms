@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require 'rack/test'
 
 require 'test/sinatra/sample_sinatra'
-require 'test/order_form'
+require 'test/forms/order_form'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
   include Rack::Test::Methods
