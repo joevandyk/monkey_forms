@@ -1,7 +1,7 @@
 require 'zlib'
 
 # Saves form as cookie as json+gzip
-class MonkeyForms::GzipCookie
+class MonkeyForms::Serializers::GzipCookie
   def initialize options={}
     @cookie_name = options[:name]
   end

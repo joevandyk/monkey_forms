@@ -1,8 +1,7 @@
 module MonkeyForms
   require 'monkey_forms/validation_scope'
+  require 'monkey_forms/serializers'
   require 'active_model'
-
-  autoload :GzipCookie, 'monkey_forms/gzip_cookie'
 
   module Form
 
