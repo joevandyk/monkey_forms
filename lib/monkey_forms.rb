@@ -2,37 +2,50 @@ module MonkeyForms
   require 'monkey_forms/validation_scope'
   require 'monkey_forms/serializers'
   require 'active_model'
+  require 'active_support/hash_with_indifferent_access'
 
   module Form
 
     def self.included base
+      base.send :include, ActiveModel::Validations
+      base.send :extend,  ActiveModel::Callbacks
       base.send :include, InstanceMethods
       base.send :extend,  ClassMethods
-      base.send :include, ActiveModel::Validations
       base.send :include, MonkeyForms::ValidationScopes
+
+      base.instance_eval do
+        define_model_callbacks :initialize
+      end
     end
 
     module InstanceMethods
       attr_reader :attributes
 
       def initialize options = {}
-        form_params = options.delete(:form) || {}
-        @options    = options
+        _run_initialize_callbacks do
+          form_params = options.delete(:form) || {}
+          @options    = options
 
-        # Load the saved form from storage
-        hash = self.class.form_storage.load(@options)
+          @options.each do |key, value|
+            instance_variable_set "@#{key}", value
+          end
 
-        # Merge in this form's params
-        hash.merge!(form_params.stringify_keys)
+          # Load the saved form from storage
+          hash = self.class.form_storage.load(@options)
 
-        @attributes = {}
+          # Merge in this form's params
+          hash.merge!(form_params.stringify_keys)
 
-        self.class.attributes.each do |a|
-          @attributes[a.to_s] = ""
-        end
+          @attributes = ActiveSupport::HashWithIndifferentAccess.new
 
-        hash.each do |key, value|
-          @attributes[key.to_s] = value
+          self.class.attributes.each do |a|
+            @attributes[a] = ""
+          end
+
+          hash.each do |key, value|
+            value.strip! if value.respond_to?(:strip!)
+            @attributes[key] = value
+          end
         end
       end
 
@@ -40,6 +53,7 @@ module MonkeyForms
         @options[:attributes] = @attributes
         self.class.form_storage.save(@options)
       end
+
     end
 
     module ClassMethods
@@ -57,6 +71,14 @@ module MonkeyForms
           # Defines public method
           define_method attr do
             @attributes[attr.to_s]
+          end
+        end
+      end
+
+      def custom_attributes *attrs
+        attrs.each do |attr|
+          instance_eval do
+            attr_reader attr
           end
         end
       end

@@ -6,13 +6,17 @@ if ! defined?(OrderForm)
 
   class OrderForm
     include MonkeyForms::Form
+    attr_reader :poop
 
     # Declares a few attributes on the form.
     form_attributes :name, :email, :city, :state
+    custom_attributes :user_id
 
     # This form serializes the submit into a gzip'd cookie with a name
     # of 'order_cookie'.
     set_form_storage MonkeyForms::Serializers::GzipCookie.new(:name => 'order_cookie')
+
+    after_initialize :do_poop
 
     # We must submit an email address for the form to validate.
     validates :email, :presence => true
@@ -30,6 +34,12 @@ if ! defined?(OrderForm)
     # This is a method that uses some form attributes.
     def person
       "#{ name } <#{ email }>"
+    end
+
+    private
+
+    def do_poop
+      @poop = true
     end
   end
 

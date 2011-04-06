@@ -25,6 +25,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
     assert_equal 4, o.attributes.size
+    assert_equal "Joe", o.attributes[:name]
+    assert_equal "Joe", o.attributes["name"]
   end
 
   def test_validation
@@ -43,6 +45,16 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
 
     # Email is fine, valid? wasn't called
     assert_equal [], o.errors[:email]
+  end
+
+  def test_after_initialize
+    o = OrderForm.new
+    assert o.poop
+  end
+
+  def test_set_custom_attributes
+    o = OrderForm.new :user_id => 1
+    assert_equal 1, o.user_id
   end
 
   def test_can_access_attributes
