@@ -21,12 +21,12 @@ if ! defined?(OrderForm)
     # We must submit an email address for the form to validate.
     validates :email, :presence => true
 
-    validation_scope :cart_errors do |scope|
+    validation_group :cart do
       # Scope some of the validation checks
-      scope.validates :name, :presence => true
+      validates :name, :presence => true
     end
 
-    validation_scope :address_errors do |scope|
+    validation_group :address do
       validates :city,  :presence => true
       validates :state, :presence => true
     end

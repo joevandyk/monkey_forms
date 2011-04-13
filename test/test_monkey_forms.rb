@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'minitest/autorun'
+require 'minitest/pride'
 require 'rack/test'
 
 require 'test/sinatra/sample_sinatra'
@@ -35,16 +36,27 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal ["can't be blank"], o.errors[:email]
   end
 
-  def test_validation_scope
+  def test_validation_before_valid_called
     o = OrderForm.new
-    # validations get ran on no_cart_errors call
-    assert_equal [], o.cart_errors[:name]
-
-    refute o.no_cart_errors?
-    assert_equal ["can't be blank"], o.cart_errors[:name]
-
-    # Email is fine, valid? wasn't called
+    assert_equal [], o.errors[:name]
     assert_equal [], o.errors[:email]
+  end
+
+  def test_validation_scope_after_valid_called
+    o = OrderForm.new
+    refute o.valid?
+    assert ["can't be blank"], o.errors[:name]
+    assert ["can't be blank"], o.errors[:email]
+  end
+
+  def test_group_validation
+    o = OrderForm.new
+    refute o.group_valid?(:cart)
+    assert_equal ["can't be blank"], o.errors[:name]
+    assert_equal [], o.errors[:email]
+
+    o.valid?
+    assert_equal ["can't be blank"],  o.errors[:email]
   end
 
   def test_after_initialize

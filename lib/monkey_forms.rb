@@ -1,8 +1,8 @@
 module MonkeyForms
-  require 'monkey_forms/validation_scope'
   require 'monkey_forms/serializers'
   require 'active_model'
   require 'active_support/hash_with_indifferent_access'
+  require 'grouped_validations'
 
   module Form
 
@@ -11,15 +11,18 @@ module MonkeyForms
       base.send :extend,  ActiveModel::Callbacks
       base.send :include, InstanceMethods
       base.send :extend,  ClassMethods
-      base.send :include, MonkeyForms::ValidationScopes
-
       base.instance_eval do
         define_model_callbacks :initialize
       end
+      base.send :include, ActiveModel::Validations
     end
 
     module InstanceMethods
       attr_reader :attributes
+
+      def persisted?
+        false
+      end
 
       def initialize options = {}
         _run_initialize_callbacks do
