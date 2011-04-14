@@ -122,12 +122,10 @@ module MonkeyForms
 
           hash.each do |key, value|
             value.strip! if value.respond_to?(:strip!)
-            if value.class == String
-              @attributes[key] = value
-            elsif value.class == Hash || value.class == Array
+            if value.class == Hash || value.class == Array
               @attributes[key] = AttributeContainer.object_for_attribute(key, value)
             else
-              raise ArgumentError.new("Unknown type #{ value.class }")
+              @attributes[key] = value
             end
           end
         end

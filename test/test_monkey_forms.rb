@@ -14,6 +14,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     SampleSinatra.new
   end
 
+  def test_boolean
+    o = OrderForm.new :form => { :cool => true }
+    assert_equal true, o.cool
+  end
+
   def test_form_post_with_cookie
     post "/form", :form => { :name => "Joe" }
     assert_equal "Joe <>", last_response.body
@@ -41,7 +46,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
-    assert_equal 7, o.attributes.size
+    assert_equal 8, o.attributes.size
     assert_equal "Joe", o.attributes[:name]
     assert_equal "Joe", o.attributes["name"]
   end
