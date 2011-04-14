@@ -21,6 +21,7 @@ module MonkeyForms
 
     class AttributeContainer < ActiveSupport::HashWithIndifferentAccess
       include ActiveModel::Validations
+      include ActiveModel::Conversion
 
       def self.object_for_attribute attribute, object
         class_name = attribute.to_s.camelize
@@ -29,7 +30,7 @@ module MonkeyForms
           %w( singular human i18n_key partial_path plural ).each do |method|
             @_name.class_eval do
               define_method method do
-                self
+                self.underscore
               end
             end
           end
@@ -59,38 +60,14 @@ module MonkeyForms
       def persisted?
         false
       end
-
-      def to_model
-        self
-      end
-
-      def to_param
-        nil
-      end
-
-      def to_key
-        nil
-      end
-
     end
 
     module InstanceMethods
+      include ActiveModel::Conversion
       attr_reader :attributes
 
       def persisted?
         false
-      end
-
-      def to_model
-        self
-      end
-
-      def to_param
-        nil
-      end
-
-      def to_key
-        nil
       end
 
       def initialize options = {}

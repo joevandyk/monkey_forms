@@ -139,6 +139,7 @@ class TestMonkeyFormsLintOnHash < MiniTest::Unit::TestCase
     assert_equal "Address",  @model.class.model_name
     assert_equal "Shipping", @form.shipping.class.model_name
     assert_equal "String",   @form.shipping.address.city.class.to_s
+    assert_equal "address",  @model.class.model_name.human
   end
 end
 
@@ -149,7 +150,6 @@ class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
     o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
     @model = o.products.first
   end
-
 end
 
 class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
