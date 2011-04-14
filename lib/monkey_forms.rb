@@ -112,9 +112,15 @@ module MonkeyForms
         attrs.each do |attr|
           @attributes << attr
 
-          # Defines public method
-          define_method attr do
-            @attributes[attr.to_s]
+          name =
+            if attr.class == Hash
+              attr.keys.first
+            else
+              attr.to_s
+            end
+
+          define_method name do
+            @attributes[name]
           end
         end
       end

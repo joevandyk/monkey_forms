@@ -21,14 +21,41 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe <joe@tanga.com>", last_response.body
   end
 
+  def test_form_post_with_hash_and_cookie
+    shipping_hash = { "address1" => "Cocks",   "city" => "Cock City" }
+    billing_hash  = { "address1" => "Billing", "city" => "City" }
+    post "/form", :form => {
+      :shipping => { :address => shipping_hash },
+      :billing  => { :address => billing_hash }
+    }
+
+    get "/billing-address"
+    assert_equal "Billing, City", last_response.body
+
+    get "/shipping-address"
+    assert_equal "Cocks, Cock City", last_response.body
+  end
+
   def test_basic
     o = OrderForm.new :form => { :name => "Joe", :email => "joe@tanga.com" }
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
-    assert_equal 4, o.attributes.size
+    assert_equal 6, o.attributes.size
     assert_equal "Joe", o.attributes[:name]
     assert_equal "Joe", o.attributes["name"]
+  end
+
+  def test_arrays
+    shipping_hash = { "address1" => "Cocks",   "city" => "Cock City" }
+    billing_hash  = { "address1" => "Billing", "city" => "City" }
+    o = OrderForm.new :form => {
+      :shipping => { :address => shipping_hash } ,
+      :billing  => { :address => billing_hash }
+    }
+
+    assert_equal o.shipping[:address], shipping_hash
+    assert_equal o.billing[:address],  billing_hash
   end
 
   def test_validation

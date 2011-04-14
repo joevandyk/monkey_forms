@@ -10,6 +10,9 @@ if ! defined?(OrderForm)
 
     # Declares a few attributes on the form.
     form_attributes :name, :email, :city, :state
+    form_attributes :shipping => { :address => [:address1, :address2, :city, :state, :zip, :phone] }
+    form_attributes :billing  => { :address => [:address1, :address2, :city, :state, :zip, :phone] }
+
     custom_attributes :user_id
     form_name :cart
 
@@ -35,6 +38,14 @@ if ! defined?(OrderForm)
     # This is a method that uses some form attributes.
     def person
       "#{ name } <#{ email }>"
+    end
+
+    def shipping_address
+      "#{ shipping[:address][:address1] }, #{ shipping[:address][:city] }"
+    end
+
+    def billing_address
+      "#{ attributes[:billing][:address][:address1] }, #{ attributes[:billing][:address][:city] }"
     end
 
     private

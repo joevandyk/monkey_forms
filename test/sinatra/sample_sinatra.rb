@@ -39,6 +39,14 @@ class SampleSinatra < Sinatra::Base
     @form.person
   end
 
+  get "/billing-address" do
+    @form.billing_address
+  end
+
+  get "/shipping-address" do
+    @form.shipping_address
+  end
+
   private
 
   def load_form
