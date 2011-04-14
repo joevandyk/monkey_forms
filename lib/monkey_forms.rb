@@ -15,6 +15,24 @@ module MonkeyForms
           super
         end
       end
+
+      def to_model
+        self
+      end
+
+      def to_param
+        nil
+      end
+
+      def persisted?
+        false
+      end
+
+      def to_key
+        nil
+      end
+
+      include ActiveModel::Validations
     end
 
     def self.included base

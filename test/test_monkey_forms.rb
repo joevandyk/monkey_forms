@@ -115,6 +115,15 @@ class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
   end
 end
 
+class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
+  include ActiveModel::Lint::Tests
+
+  def setup
+    form = OrderForm.new(:form => { :shipping => { :address => { :city => "Seattle " } } })
+    @model = form.shipping.address
+  end
+end
+
 class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 
