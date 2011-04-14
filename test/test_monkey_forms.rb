@@ -5,6 +5,7 @@ require 'rack/test'
 
 require 'test/sinatra/sample_sinatra'
 require 'test/forms/order_form'
+require 'test/forms/basic_form'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
   include Rack::Test::Methods
@@ -84,5 +85,21 @@ class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
 
   def test_form_name
     assert_equal "cart", @model.class.model_name
+  end
+end
+
+class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
+  include ActiveModel::Lint::Tests
+
+  def setup
+    @model = BasicForm.new
+  end
+
+  def test_form_name
+    assert_equal "basic_form", @model.class.model_name
+  end
+
+  def test_attributes
+    assert_equal @model.attributes, {}
   end
 end

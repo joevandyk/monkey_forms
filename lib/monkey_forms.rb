@@ -2,6 +2,7 @@ module MonkeyForms
   require 'monkey_forms/serializers'
   require 'active_model'
   require 'active_support/hash_with_indifferent_access'
+  require 'active_support/core_ext/object/try'
   require 'grouped_validations'
 
   module Form
@@ -46,7 +47,12 @@ module MonkeyForms
           end
 
           # Load the saved form from storage
-          hash = self.class.form_storage.load(@options)
+          hash =
+            if self.class.form_storage
+              hash = self.class.form_storage.load(@options)
+            else
+              {}
+            end
 
           # Merge in this form's params
           hash.merge!(form_params.stringify_keys)
@@ -72,12 +78,16 @@ module MonkeyForms
     end
 
     module ClassMethods
-      attr_reader :form_storage, :attributes
+      attr_reader :form_storage
+
+      def attributes
+        @attributes ||= {}
+      end
 
       # Compatibility with ActiveModel::Naming
       def model_name
         if !defined?(@_model_name)
-          @_model_name = (@_form_name.to_s || name.underscore).try(:underscore)
+          @_model_name = (@_form_name.try(:to_s) || name.underscore).try(:underscore)
           %w( singular human i18n_key partial_path plural ).each do |method|
             @_model_name.class_eval do
               define_method method do
