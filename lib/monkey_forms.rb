@@ -24,6 +24,18 @@ module MonkeyForms
         false
       end
 
+      def to_model
+        self
+      end
+
+      def to_param
+        nil
+      end
+
+      def to_key
+        nil
+      end
+
       def initialize options = {}
         _run_initialize_callbacks do
           form_params = options.delete(:form) || {}
@@ -61,6 +73,21 @@ module MonkeyForms
 
     module ClassMethods
       attr_reader :form_storage, :attributes
+
+      # Compatibility with ActiveModel::Naming
+      def model_name
+        if !defined?(@_model_name)
+          @_model_name = name.underscore
+          %w( singular human i18n_key partial_path plural ).each do |method|
+            @_model_name.class_eval do
+              define_method method do
+                self
+              end
+            end
+          end
+        end
+        @_model_name
+      end
 
       def set_form_storage storage_object
         @form_storage = storage_object

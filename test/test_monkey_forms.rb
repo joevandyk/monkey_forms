@@ -74,3 +74,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe <joe@tanga.com>", o.person
   end
 end
+
+class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
+  include ActiveModel::Lint::Tests
+
+  def setup
+    @model = OrderForm.new
+  end
+end
