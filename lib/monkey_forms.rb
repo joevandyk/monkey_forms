@@ -40,7 +40,21 @@ module MonkeyForms
         if object.class == Array
           object.map { |o| klass.new(o) }
         else
-          klass.new(object)
+          obj = klass.new(object)
+          if object.class == Hash
+            object.keys.each do |key|
+              obj.class_eval do
+                define_method "#{key}_attributes" do
+                  send key
+                end
+                define_method "#{key}_attributes=" do
+                  # What goes here?
+                  fail
+                end
+              end
+            end
+          end
+          obj
         end
       end
 
@@ -100,7 +114,8 @@ module MonkeyForms
           hash.each do |key, value|
             value.strip! if value.respond_to?(:strip!)
             if value.class == Hash || value.class == Array
-              @attributes[key] = AttributeContainer.object_for_attribute(key, value)
+              obj = AttributeContainer.object_for_attribute(key, value)
+              @attributes[key] = obj
             else
               @attributes[key] = value
             end
@@ -165,6 +180,17 @@ module MonkeyForms
             else
               attr.to_s
             end
+
+          if attr.class == Hash
+            define_method "#{name}_attributes=" do |a|
+              # what goes here?
+              fail
+            end
+
+            define_method "#{name}_attributes" do
+              send name
+            end
+          end
 
           define_method name do
             @attributes[name]
