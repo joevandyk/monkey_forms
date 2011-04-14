@@ -24,19 +24,29 @@ module MonkeyForms
 
       def self.object_for_attribute attribute, object
         class_name = attribute.to_s.camelize
-        begin
-          class_name.constantize
-        rescue NameError
-          Object.const_set(class_name, Class.new(AttributeContainer))
+        klass = Class.new(AttributeContainer) do
+          @_name = class_name
+          %w( singular human i18n_key partial_path plural ).each do |method|
+            @_name.class_eval do
+              define_method method do
+                self
+              end
+            end
+          end
+          def self.model_name() @_name end
         end
-        class_name.constantize.new(object)
+
+        if object.class == Array
+          object.map { |o| klass.new(o) }
+        else
+          klass.new(object)
+        end
       end
 
       def method_missing method, *args, &block
         if key?(method)
           a = self[method]
           if a.class == ActiveSupport::HashWithIndifferentAccess
-
             AttributeContainer.object_for_attribute(method, a)
           else
             a
@@ -105,6 +115,7 @@ module MonkeyForms
 
           @attributes = ActiveSupport::HashWithIndifferentAccess.new
 
+          # Unsure if this is needed
           self.class.attributes.each do |a|
             @attributes[a] = ""
           end
@@ -113,7 +124,7 @@ module MonkeyForms
             value.strip! if value.respond_to?(:strip!)
             if value.class == String
               @attributes[key] = value
-            elsif value.class == Hash
+            elsif value.class == Hash || value.class == Array
               @attributes[key] = AttributeContainer.object_for_attribute(key, value)
             else
               raise ArgumentError.new("Unknown type #{ value.class }")
@@ -162,7 +173,16 @@ module MonkeyForms
       def form_attributes *attrs
         @attributes ||= []
         attrs.each do |attr|
-          @attributes << attr
+
+          if attr.class == String or attr.class == Symbol
+            @attributes << attr
+          elsif attr.class == Hash
+            attr.keys.each do |a|
+              @attributes << a
+            end
+          else
+            raise "unknown arg type"
+          end
 
           name =
             if attr.class == Hash

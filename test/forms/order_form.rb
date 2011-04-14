@@ -12,6 +12,7 @@ if ! defined?(OrderForm)
     form_attributes :name, :email, :city, :state
     form_attributes :shipping => { :address => [:address1, :address2, :city, :state, :zip, :phone] }
     form_attributes :billing  => { :address => [:address1, :address2, :city, :state, :zip, :phone] }
+    form_attributes :products => [ ]
 
     custom_attributes :user_id
     form_name :cart

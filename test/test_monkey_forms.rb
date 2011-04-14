@@ -41,12 +41,19 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
-    assert_equal 6, o.attributes.size
+    assert_equal 7, o.attributes.size
     assert_equal "Joe", o.attributes[:name]
     assert_equal "Joe", o.attributes["name"]
   end
 
   def test_arrays
+    o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
+    assert_equal 2, o.products.size
+    assert_equal 1, o.products.first.product_id
+    assert_equal 2, o.products.last.product_id
+  end
+
+  def test_hashes
     shipping_hash = { "address1" => "Cocks",   "city" => "Cock City" }
     billing_hash  = { "address1" => "Billing", "city" => "City" }
     o = OrderForm.new :form => {
@@ -115,7 +122,7 @@ class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
   end
 end
 
-class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
+class TestMonkeyFormsLintOnHash < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 
   def setup
@@ -126,8 +133,18 @@ class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
   def test_name
     assert_equal "Address",  @model.class.model_name
     assert_equal "Shipping", @form.shipping.class.model_name
-    assert_equal "String",  @form.shipping.address.city.class.to_s
+    assert_equal "String",   @form.shipping.address.city.class.to_s
   end
+end
+
+class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
+  include ActiveModel::Lint::Tests
+
+  def setup
+    o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
+    @model = o.products.first
+  end
+
 end
 
 class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
