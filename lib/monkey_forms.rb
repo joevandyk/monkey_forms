@@ -3,37 +3,10 @@ module MonkeyForms
   require 'active_model'
   require 'active_support/hash_with_indifferent_access'
   require 'active_support/core_ext/object/try'
+  require 'active_support/inflector'
   require 'grouped_validations'
 
   module Form
-
-    class ActiveSupport::HashWithIndifferentAccess
-      def method_missing method, *args, &block
-        if key?(method)
-          self[method]
-        else
-          super
-        end
-      end
-
-      def to_model
-        self
-      end
-
-      def to_param
-        nil
-      end
-
-      def persisted?
-        false
-      end
-
-      def to_key
-        nil
-      end
-
-      include ActiveModel::Validations
-    end
 
     def self.included base
       base.send :include, ActiveModel::Validations
@@ -44,6 +17,51 @@ module MonkeyForms
         define_model_callbacks :initialize
       end
       base.send :include, ActiveModel::Validations
+    end
+
+    class AttributeContainer < ActiveSupport::HashWithIndifferentAccess
+      include ActiveModel::Validations
+
+      def self.object_for_attribute attribute, object
+        class_name = attribute.to_s.camelize
+        begin
+          class_name.constantize
+        rescue NameError
+          Object.const_set(class_name, Class.new(AttributeContainer))
+        end
+        class_name.constantize.new(object)
+      end
+
+      def method_missing method, *args, &block
+        if key?(method)
+          a = self[method]
+          if a.class == ActiveSupport::HashWithIndifferentAccess
+
+            AttributeContainer.object_for_attribute(method, a)
+          else
+            a
+          end
+        else
+          super
+        end
+      end
+
+      def persisted?
+        false
+      end
+
+      def to_model
+        self
+      end
+
+      def to_param
+        nil
+      end
+
+      def to_key
+        nil
+      end
+
     end
 
     module InstanceMethods
@@ -93,7 +111,13 @@ module MonkeyForms
 
           hash.each do |key, value|
             value.strip! if value.respond_to?(:strip!)
-            @attributes[key] = value
+            if value.class == String
+              @attributes[key] = value
+            elsif value.class == Hash
+              @attributes[key] = AttributeContainer.object_for_attribute(key, value)
+            else
+              raise ArgumentError.new("Unknown type #{ value.class }")
+            end
           end
         end
       end

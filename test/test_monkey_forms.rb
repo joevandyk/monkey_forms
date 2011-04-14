@@ -29,11 +29,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
       :billing  => { :address => billing_hash }
     }
 
-    get "/billing-address"
-    assert_equal "Billing, City", last_response.body
-
     get "/shipping-address"
     assert_equal "Cocks, Cock City", last_response.body
+
+    get "/billing-address"
+    assert_equal "Billing, City", last_response.body
   end
 
   def test_basic
@@ -54,8 +54,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
       :billing  => { :address => billing_hash }
     }
 
-    assert_equal o.billing[:address][:address1], "Billing"
-    assert_equal o.shipping.address.city,        "Cock City"
+    assert_equal "Billing", o.billing.address.address1
+    assert_equal "Cock City", o.shipping.address.city
   end
 
   def test_validation
@@ -119,8 +119,14 @@ class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 
   def setup
-    form = OrderForm.new(:form => { :shipping => { :address => { :city => "Seattle " } } })
-    @model = form.shipping.address
+    @form  = OrderForm.new(:form => { :shipping => { :address => { :city => "Seattle " } } })
+    @model = @form.shipping.address
+  end
+
+  def test_name
+    assert_equal "Address",  @model.class.model_name
+    assert_equal "Shipping", @form.shipping.class.model_name
+    assert_equal "String",  @form.shipping.address.city.class.to_s
   end
 end
 
