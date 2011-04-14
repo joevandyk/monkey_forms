@@ -11,6 +11,7 @@ if ! defined?(OrderForm)
     # Declares a few attributes on the form.
     form_attributes :name, :email, :city, :state
     custom_attributes :user_id
+    form_name :cart
 
     # This form serializes the submit into a gzip'd cookie with a name
     # of 'order_cookie'.

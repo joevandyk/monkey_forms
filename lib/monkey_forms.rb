@@ -77,7 +77,7 @@ module MonkeyForms
       # Compatibility with ActiveModel::Naming
       def model_name
         if !defined?(@_model_name)
-          @_model_name = name.underscore
+          @_model_name = (@_form_name.to_s || name.underscore).try(:underscore)
           %w( singular human i18n_key partial_path plural ).each do |method|
             @_model_name.class_eval do
               define_method method do
@@ -87,6 +87,10 @@ module MonkeyForms
           end
         end
         @_model_name
+      end
+
+      def form_name name
+        @_form_name = name
       end
 
       def set_form_storage storage_object

@@ -81,4 +81,8 @@ class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
   def setup
     @model = OrderForm.new
   end
+
+  def test_form_name
+    assert_equal "cart", @model.class.model_name
+  end
 end
