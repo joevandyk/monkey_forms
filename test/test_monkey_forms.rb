@@ -54,8 +54,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
       :billing  => { :address => billing_hash }
     }
 
-    assert_equal o.shipping[:address], shipping_hash
-    assert_equal o.billing[:address],  billing_hash
+    assert_equal o.billing[:address][:address1], "Billing"
+    assert_equal o.shipping.address.city,        "Cock City"
   end
 
   def test_validation

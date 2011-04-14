@@ -41,7 +41,7 @@ if ! defined?(OrderForm)
     end
 
     def shipping_address
-      "#{ shipping[:address][:address1] }, #{ shipping[:address][:city] }"
+      "#{ shipping.address.address1 }, #{ shipping.address.city }"
     end
 
     def billing_address

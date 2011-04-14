@@ -7,6 +7,16 @@ module MonkeyForms
 
   module Form
 
+    class ActiveSupport::HashWithIndifferentAccess
+      def method_missing method, *args, &block
+        if key?(method)
+          self[method]
+        else
+          super
+        end
+      end
+    end
+
     def self.included base
       base.send :include, ActiveModel::Validations
       base.send :extend,  ActiveModel::Callbacks
