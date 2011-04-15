@@ -98,12 +98,19 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_arrays
-    o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
+    o = OrderForm.new :form => {
+      "products" => [
+        {"quantity"   => "1", "product_id" => "1"},
+        {"product_id" => "2"} ]}
+
+    skip
     assert_equal 2, o.products.size
     assert_equal 1, o.products.first.product_id
     assert_equal 2, o.products.last.product_id
   end
+end
 
+=begin
   def test_hashes
     shipping_hash = { "address1" => "Cocks",   "city" => "Cock City" }
     billing_hash  = { "address1" => "Billing", "city" => "City" }
@@ -174,7 +181,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 end
 
-=begin
 class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 
