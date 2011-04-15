@@ -23,7 +23,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     post "/form", :form => { :name => "Joe" }
     assert_equal "Joe <>", last_response.body
     post "/form", :form => { :email => "joe@tanga.com" }
-    puts last_response.errors
     assert_equal "Joe <joe@tanga.com>", last_response.body
   end
 
@@ -36,23 +35,18 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     }
 
     get "/shipping-address"
-    puts last_response.errors
     assert_equal "Cocks, Cock City", last_response.body
 
     get "/billing-address"
-    puts last_response.errors
-    skip
     assert_equal "Billing, City", last_response.body
   end
 
-  def test_basic
+  def test_basic_form
     o = OrderForm.new :form => { :name => "Joe", :email => "joe@tanga.com" }
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
-    assert_equal 8, o.attributes.size
-    assert_equal "Joe", o.attributes[:name]
-    assert_equal "Joe", o.attributes["name"]
+    assert_equal "Joe", o.attributes.name
   end
 
   class RealBasic
@@ -74,7 +68,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_basic
-    o = RealBasic.new :form => { :name => "Joe", :gender => "male", :age => "30" }
+    o = RealBasic.new :form => { "name" => "Joe", "gender" => "male", "age" => "30" }
     assert_equal "Joe",  o.name
     assert_equal "",     o.email
     assert_equal "30",   o.age
@@ -83,12 +77,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
 
   def test_basic1
     o = RealBasic.new :form => {
-      :address => { :city => "Seattle",
-                    :state => "WA",
-                    :phone => { :area => "206", :number => "8010737" } }
+      :address => { "city" => "Seattle",
+                    "state" => "WA",
+                    "phone" => { "area" => "206", "number" => "8010737" } }
     }
 
-    #p o.attribute_container
     assert_equal "Seattle", o.address.city
     assert_equal "WA",      o.address.state
     assert_equal "206",     o.address.phone.area
@@ -97,15 +90,13 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
 
   # Updating part of an object, rest should still exist
   def test_basic_partial
-    o = RealBasic.new :form => { :address => { :city => "Seattle"  } }
+    o = RealBasic.new :form => { "address" => { "city" => "Seattle"  } }
     assert_equal "Seattle", o.address.city
     assert_equal "", o.address.state
     assert_equal "", o.address.phone.area
     assert_equal "", o.address.phone.number
   end
-end
 
-=begin
   def test_arrays
     o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
     assert_equal 2, o.products.size
@@ -134,8 +125,6 @@ end
   def test_initialization
     o = OrderForm.new
     refute_nil o.shipping
-    p o.shipping
-    p o.shipping.address
     refute_nil o.shipping.address
     refute_nil o.shipping.address.city
   end
@@ -185,6 +174,7 @@ end
   end
 end
 
+=begin
 class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 

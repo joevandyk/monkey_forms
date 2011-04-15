@@ -39,7 +39,7 @@ module MonkeyForms
           # Load the saved form from storage
           hash =
             if self.class.form_storage
-              hash = self.class.form_storage.load(@options)
+              self.class.form_storage.load(@options)
             else
               {}
             end
@@ -53,7 +53,7 @@ module MonkeyForms
           end
 
           hash.each do |key, value|
-            @attribute_container.add(key.to_sym, value)
+            @attribute_container.add(key, value)
           end
         end
       end

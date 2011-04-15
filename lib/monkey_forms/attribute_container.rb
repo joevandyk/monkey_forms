@@ -1,12 +1,13 @@
 module MonkeyForms
   class AttributeContainer
+    require 'active_support/hash_with_indifferent_access'
     include ActiveModel::Validations
     include ActiveModel::Conversion
 
     attr_reader :attributes
 
     def initialize *args
-      @attributes = {}
+      @attributes = ActiveSupport::HashWithIndifferentAccess.new
       if args.present?
         add(*args)
       end
@@ -14,8 +15,9 @@ module MonkeyForms
 
     def add attribute, value = ""
       if attribute.class == String
-        raise ArgumentError.new("form attributes must be symbols! (was #{ attribute }")
-      elsif attribute.class == Symbol
+        attribute = attribute.to_sym
+      end
+      if attribute.class == Symbol
         merge attribute, do_something_with_value(value)
       elsif attribute.class == Hash
         attribute.each do |key, value|
@@ -39,7 +41,11 @@ module MonkeyForms
     end
 
     def to_hash
-      @attributes.to_hash
+      {}.tap do |h|
+        @attributes.each do |key, value|
+          h[key] = value.respond_to?(:to_hash) ? value.to_hash : value
+        end
+      end
     end
 
     def respond_to? method, *args
