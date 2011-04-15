@@ -16,17 +16,21 @@ module MonkeyForms
       if attribute.class == String
         raise ArgumentError.new("form attributes must be symbols! (was #{ attribute }")
       elsif attribute.class == Symbol
-        @attributes[attribute] = do_something_with_value(value)
+        merge attribute, do_something_with_value(value)
       elsif attribute.class == Hash
         attribute.each do |key, value|
-          @attributes[key] = do_something_with_value(value)
+          merge key, do_something_with_value(value)
         end
       elsif attribute.class == Array
         attribute.each do |a|
           if a.class == Symbol
-            @attributes[a] = do_something_with_value(value)
+            merge a, do_something_with_value(value)
+          elsif a.class == Hash
+            a.each do |key, value|
+              merge key, do_something_with_value(value)
+            end
           else
-            fail
+            fail a.inspect
           end
         end
       else
@@ -40,6 +44,25 @@ module MonkeyForms
 
     def method_missing method, *args, &block
       @attributes[method] || super
+    end
+
+    def merge key, value
+      if ! @attributes.key?(key)
+        @attributes[key] = value
+      else
+        if @attributes[key].class == String
+          @attributes[key] = value
+        elsif @attributes[key].class == AttributeContainer
+          # TODO figure out merge here
+          @attributes[key].attributes.keys.each do |k|
+            if value.attributes[k]
+              @attributes[key].merge(k, value.attributes[k])
+            end
+          end
+        else
+          fail @attributes[key].class.inspect
+        end
+      end
     end
 
     private

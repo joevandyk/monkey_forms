@@ -57,7 +57,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     include MonkeyForms::Form
     form_attributes :name, :email, :age
     form_attributes :gender
-    form_attributes :address => [:city, :state]
+    form_attributes :address => [:city, :state, {:phone => [:area, :number]}]
   end
 
   def test_null
@@ -67,21 +67,39 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "", o.gender
     assert_equal "", o.address.city
     assert_equal "", o.address.state
+    assert_equal "", o.address.phone.area
+    assert_equal "", o.address.phone.number
   end
 
   def test_basic
     o = RealBasic.new :form => { :name => "Joe", :gender => "male", :age => "30" }
-    assert_equal "Joe", o.name
-    assert_equal "", o.email
-    assert_equal "30", o.age
+    assert_equal "Joe",  o.name
+    assert_equal "",     o.email
+    assert_equal "30",   o.age
     assert_equal "male", o.gender
   end
 
   def test_basic1
-    o = RealBasic.new :form => { :address => { :city => "Seattle", :state => "WA" } }
-    refute_equal Hash,      o.address.class
+    o = RealBasic.new :form => {
+      :address => { :city => "Seattle",
+                    :state => "WA",
+                    :phone => { :area => "206", :number => "8010737" } }
+    }
+
+    #p o.attribute_container
     assert_equal "Seattle", o.address.city
     assert_equal "WA",      o.address.state
+    assert_equal "206",     o.address.phone.area
+    assert_equal "8010737", o.address.phone.number
+  end
+
+  # Updating part of an object, rest should still exist
+  def test_basic_partial
+    o = RealBasic.new :form => { :address => { :city => "Seattle"  } }
+    assert_equal "Seattle", o.address.city
+    assert_equal "", o.address.state
+    assert_equal "", o.address.phone.area
+    assert_equal "", o.address.phone.number
   end
 end
 
