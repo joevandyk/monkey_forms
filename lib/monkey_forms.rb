@@ -108,7 +108,18 @@ module MonkeyForms
 
           # Unsure if this is needed
           self.class.attributes.each do |a|
-            @attributes[a] = ""
+            if a.class == String or a.class == Symbol
+              @attributes[a] = ""
+            else
+              a.each do |key, value|
+                @attributes[key] = AttributeContainer.object_for_attribute(a, value)
+                if value.class == Array
+                  value.each do |a|
+                    @attributes[key][a] = ""
+                  end
+                end
+              end
+            end
           end
 
           hash.each do |key, value|
@@ -164,15 +175,7 @@ module MonkeyForms
         @attributes ||= []
         attrs.each do |attr|
 
-          if attr.class == String or attr.class == Symbol
-            @attributes << attr
-          elsif attr.class == Hash
-            attr.keys.each do |a|
-              @attributes << a
-            end
-          else
-            raise "unknown arg type"
-          end
+          @attributes << attr
 
           name =
             if attr.class == Hash

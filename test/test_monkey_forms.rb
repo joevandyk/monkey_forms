@@ -76,6 +76,15 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert o.billing.respond_to?(:address_attributes=)
   end
 
+  def test_initialization
+    o = OrderForm.new
+    refute_nil o.shipping
+    p o.shipping
+    p o.shipping.address
+    refute_nil o.shipping.address
+    refute_nil o.shipping.address.city
+  end
+
   def test_validation
     o = OrderForm.new :form => { :name => "Joe" }
     o.valid?
