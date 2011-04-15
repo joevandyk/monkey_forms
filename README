@@ -2,6 +2,9 @@ Monkey Forms Overview
 
 # TODO Rewrite this so that it makes sense.
 
+WARNING
+This code is TERRIBLE and I don't fully understand it yet.
+
 MonkeyForms::Form is an interface / layer between ActionController
 and your Models (or whatever you are saving the data to).
 You could just send an email after they submit the form.
