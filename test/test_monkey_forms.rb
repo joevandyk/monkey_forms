@@ -74,11 +74,20 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_basic
-    o = RealBasic.new :form => { "name" => "Joe", "gender" => "male", "age" => "30" }
+    params = { :form => { "name" => "Joe", "gender" => "male", "age" => "30" } }
+    o = RealBasic.new HashWithIndifferentAccess.new(params)
     assert_equal "Joe",  o.name
     assert_equal "",     o.email
     assert_equal "30",   o.age
     assert_equal "male", o.gender
+  end
+
+  def test_basic_setting
+    o = RealBasic.new :form => { "name" => "Joe", "gender" => "male", "age" => "30" }
+    o.attributes.name = "Bob"
+    o.age             = "40"
+    assert_equal "Bob", o.name
+    assert_equal "40",  o.age
   end
 
   def test_basic1
@@ -104,10 +113,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_arrays
-    o = OrderForm.new :form => {
-      "products" => [
+    params = { :form => HashWithIndifferentAccess.new(
+      { "products" => [
         {"quantity"   => "1", "product_id" => "1"},
-        {"product_id" => "2"} ]}
+        {"product_id" => "2"} ]}) }
+
+    o = OrderForm.new params
 
     assert_equal 2, o.products.size
     assert_equal "1", o.products.first.product_id

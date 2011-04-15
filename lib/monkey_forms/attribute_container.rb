@@ -62,7 +62,7 @@ module MonkeyForms
         else
           merge attribute, do_something_with_value(attribute, value)
         end
-      elsif attribute.class == Hash
+      elsif attribute.class == Hash || attribute.class == ActiveSupport::HashWithIndifferentAccess
         attribute.each do |key, value|
           merge key, do_something_with_value(key, value)
         end
@@ -71,7 +71,7 @@ module MonkeyForms
           if a.class == Symbol || a.class == String
             next if a.blank?
             merge a, do_something_with_value(a, value)
-          elsif a.class == Hash
+          elsif a.class == Hash || a.class == ActiveSupport::HashWithIndifferentAccess
             a.each do |key, value|
               merge key, do_something_with_value(key, value)
             end
@@ -119,6 +119,10 @@ module MonkeyForms
           @attributes[key]
         end
 
+        define_method "#{key}=" do |value|
+          @attributes[key] = value
+        end
+
         if value.respond_to?(:attributes)
           define_method "#{key}_attributes" do
             @attributes[key]
@@ -134,7 +138,7 @@ module MonkeyForms
     def do_something_with_value key, value
       if value.class == String || value.class == Symbol || value.class == TrueClass || value.class == FalseClass
         value
-      elsif value.class == Array or value.class == Hash
+      elsif value.class == Array or value.class == Hash || value.class == ActiveSupport::HashWithIndifferentAccess
         AttributeContainer.build(key, value)
       elsif value.respond_to?(:attributes)
         value
