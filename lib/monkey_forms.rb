@@ -1,13 +1,13 @@
 module MonkeyForms
-  require 'monkey_forms/serializers'
   require 'active_model'
   require 'active_support/hash_with_indifferent_access'
   require 'active_support/core_ext/object/try'
   require 'active_support/inflector'
   require 'grouped_validations'
+  require 'monkey_forms/serializers'
+  require 'monkey_forms/attribute_container'
 
   module Form
-
     def self.included base
       base.send :include, ActiveModel::Validations
       base.send :extend,  ActiveModel::Callbacks
@@ -17,63 +17,6 @@ module MonkeyForms
         define_model_callbacks :initialize
       end
       base.send :include, ActiveModel::Validations
-    end
-
-    class AttributeContainer < ActiveSupport::HashWithIndifferentAccess
-      include ActiveModel::Validations
-      include ActiveModel::Conversion
-
-      def self.object_for_attribute attribute, object
-        class_name = attribute.to_s.camelize
-        klass = Class.new(AttributeContainer) do
-          @_name = class_name
-          %w( singular human i18n_key partial_path plural ).each do |method|
-            @_name.class_eval do
-              define_method method do
-                self.underscore
-              end
-            end
-          end
-          def self.model_name() @_name end
-        end
-
-        if object.class == Array
-          object.map { |o| klass.new(o) }
-        else
-          obj = klass.new(object)
-          if object.class == Hash
-            object.keys.each do |key|
-              obj.class_eval do
-                define_method "#{key}_attributes" do
-                  send key
-                end
-                define_method "#{key}_attributes=" do
-                  # What goes here?
-                  fail
-                end
-              end
-            end
-          end
-          obj
-        end
-      end
-
-      def method_missing method, *args, &block
-        if key?(method)
-          a = self[method]
-          if a.class == ActiveSupport::HashWithIndifferentAccess
-            AttributeContainer.object_for_attribute(method, a)
-          else
-            a
-          end
-        else
-          super
-        end
-      end
-
-      def persisted?
-        false
-      end
     end
 
     module InstanceMethods
@@ -104,33 +47,25 @@ module MonkeyForms
           # Merge in this form's params
           hash.merge!(form_params.stringify_keys)
 
-          @attributes = ActiveSupport::HashWithIndifferentAccess.new
-
-          # Unsure if this is needed
-          self.class.attributes.each do |a|
-            if a.class == String or a.class == Symbol
-              @attributes[a] = ""
-            else
-              a.each do |key, value|
-                @attributes[key] = AttributeContainer.object_for_attribute(a, value)
-                if value.class == Array
-                  value.each do |a|
-                    @attributes[key][a] = ""
-                  end
-                end
-              end
-            end
+          @attribute_container = AttributeContainer.new
+          self.class.attributes.each do |attribute|
+            accessor = @attribute_container.add attribute
           end
 
           hash.each do |key, value|
-            value.strip! if value.respond_to?(:strip!)
-            if value.class == Hash || value.class == Array
-              obj = AttributeContainer.object_for_attribute(key, value)
-              @attributes[key] = obj
-            else
-              @attributes[key] = value
-            end
+            @attribute_container.add(key.to_sym, value)
           end
+        end
+      end
+
+      # Debug
+      attr_accessor :attribute_container
+
+      def method_missing method, *args, &block
+        if @attribute_container.respond_to?(method)
+          @attribute_container.send(method)
+        else
+          super
         end
       end
 
@@ -145,7 +80,7 @@ module MonkeyForms
       attr_reader :form_storage
 
       def attributes
-        @attributes ||= {}
+        @attributes ||= []
       end
 
       # Compatibility with ActiveModel::Naming
@@ -172,32 +107,8 @@ module MonkeyForms
       end
 
       def form_attributes *attrs
-        @attributes ||= []
         attrs.each do |attr|
-
-          @attributes << attr
-
-          name =
-            if attr.class == Hash
-              attr.keys.first
-            else
-              attr.to_s
-            end
-
-          if attr.class == Hash
-            define_method "#{name}_attributes=" do |a|
-              # what goes here?
-              fail
-            end
-
-            define_method "#{name}_attributes" do
-              send name
-            end
-          end
-
-          define_method name do
-            @attributes[name]
-          end
+          attributes << attr
         end
       end
 

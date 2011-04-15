@@ -14,6 +14,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     SampleSinatra.new
   end
 
+=begin
   def test_boolean
     o = OrderForm.new :form => { :cool => true }
     assert_equal true, o.cool
@@ -50,7 +51,41 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe", o.attributes[:name]
     assert_equal "Joe", o.attributes["name"]
   end
+=end
 
+  class RealBasic
+    include MonkeyForms::Form
+    form_attributes :name, :email, :age
+    form_attributes :gender
+    form_attributes :address => [:city, :state]
+  end
+
+  def test_null
+    o = RealBasic.new
+    assert_equal "", o.name
+    assert_equal "", o.email
+    assert_equal "", o.gender
+    assert_equal "", o.address.city
+    assert_equal "", o.address.state
+  end
+
+  def test_basic
+    o = RealBasic.new :form => { :name => "Joe", :gender => "male", :age => "30" }
+    assert_equal "Joe", o.name
+    assert_equal "", o.email
+    assert_equal "30", o.age
+    assert_equal "male", o.gender
+  end
+
+  def test_basic1
+    o = RealBasic.new :form => { :address => { :city => "Seattle", :state => "WA" } }
+    refute_equal Hash,      o.address.class
+    assert_equal "Seattle", o.address.city
+    assert_equal "WA",      o.address.state
+  end
+end
+
+=begin
   def test_arrays
     o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
     assert_equal 2, o.products.size
@@ -182,3 +217,4 @@ class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
     assert_equal @model.attributes, {}
   end
 end
+=end
