@@ -11,8 +11,15 @@ module MonkeyForms
     def initialize *args
       @attributes = ActiveSupport::HashWithIndifferentAccess.new
       if args.present?
+        if args.first.include?(:_list) or args.first.include?("_list")
+          @list = true
+        end
         add(*args)
       end
+    end
+
+    def list?
+      @list == true
     end
 
     def self.build name, *args
@@ -38,7 +45,19 @@ module MonkeyForms
         attribute = attribute.to_sym
       end
       if attribute.class == Symbol
-        merge attribute, do_something_with_value(attribute, value)
+        if @attributes[attribute].respond_to?(:list?) and @attributes[attribute].list?
+          copy = @attributes[attribute].dup
+          @attributes[attribute] = []
+          value.each do |v|
+            copy.each do |k, v1|
+              v[k] ||= ""
+            end
+
+            @attributes[attribute] << do_something_with_value(attribute, v)
+          end
+        else
+          merge attribute, do_something_with_value(attribute, value)
+        end
       elsif attribute.class == Hash
         attribute.each do |key, value|
           merge key, do_something_with_value(key, value)
@@ -75,13 +94,10 @@ module MonkeyForms
         if @attributes[key].class == String
           set_key key, value
         elsif @attributes[key].respond_to?(:attributes)
-          # TODO figure out merge here
           @attributes[key].attributes.keys.each do |k|
-            #if value.respond_to?(:attributes)
-              if value.attributes[k]
-                @attributes[key].merge(k, value.attributes[k])
-              end
-            #end
+            if value.attributes[k]
+              @attributes[key].merge(k, value.attributes[k])
+            end
           end
         else
           fail @attributes[key].class.inspect

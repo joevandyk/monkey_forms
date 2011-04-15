@@ -10,9 +10,15 @@ if ! defined?(OrderForm)
 
     # Declares a few attributes on the form.
     form_attributes :name, :email, :city, :state
+
+    # Form params:
+    # :shipping => { :address => { :address1 => "Street", :city => "City", :etc } }
     form_attributes :shipping => { :address => [:address1, :address2, :city, :state, :zip, :phone] }
     form_attributes :billing  => { :address => [:address1, :address2, :city, :state, :zip, :phone] }
-    form_attributes :products => [ :product_id, :quantity]
+
+    # Form params:
+    #  :products => [ {:product_id => 1, :quantity => 2}, {:product_id => 2, :quantity => 3}]
+    form_attributes :products => [ :product_id, :quantity, :_list]
     form_attributes :cool # A boolean
 
     custom_attributes :user_id
