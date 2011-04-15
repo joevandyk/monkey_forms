@@ -65,6 +65,10 @@ module MonkeyForms
         @attribute_container
       end
 
+      def respond_to? *args
+        @attribute_container.respond_to?(*args) || super
+      end
+
       def method_missing method, *args, &block
         if @attribute_container.respond_to?(method)
           @attribute_container.send(method)

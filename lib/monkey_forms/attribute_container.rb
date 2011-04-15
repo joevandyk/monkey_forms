@@ -48,20 +48,12 @@ module MonkeyForms
       end
     end
 
-    def respond_to? method, *args
-      @attributes[method] || super
-    end
-
-    def method_missing method, *args, &block
-      @attributes[method] || super
-    end
-
     def merge key, value
       if ! @attributes.key?(key)
-        @attributes[key] = value
+        set_key key, value
       else
         if @attributes[key].class == String
-          @attributes[key] = value
+          set_key key, value
         elsif @attributes[key].class == AttributeContainer
           # TODO figure out merge here
           @attributes[key].attributes.keys.each do |k|
@@ -76,6 +68,25 @@ module MonkeyForms
     end
 
     private
+
+    def set_key key, value
+      @attributes[key] = value
+      class_eval do
+        define_method key do
+          @attributes[key]
+        end
+
+        if value.class == AttributeContainer
+          define_method "#{key}_attributes" do
+            @attributes[key]
+          end
+
+          define_method "#{key}_attributes=" do |*something|
+            fail "I don't think I need to do anything, just the existence is enough for Rails."
+          end
+        end
+      end
+    end
 
     def do_something_with_value value
       if value.class == String || value.class == Symbol || value.class == TrueClass || value.class == FalseClass

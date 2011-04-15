@@ -116,10 +116,10 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Cock City", o.shipping.address.city
 
     # Compatability with rails nested forms
-    assert o.billing_attributes
-    assert o.respond_to?(:billing_attributes=)
-    assert o.billing.address_attributes
+    assert_equal o.billing_attributes, o.billing
+    assert_equal o.billing.address_attributes, o.billing.address
     assert o.billing.respond_to?(:address_attributes=)
+    assert o.respond_to?("billing_attributes=")
   end
 
   def test_initialization
