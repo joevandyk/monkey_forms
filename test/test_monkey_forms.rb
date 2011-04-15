@@ -19,6 +19,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal true, o.cool
   end
 
+  def test_delegation
+    o = OrderForm.new
+    # Delegates unknown stuff
+    assert o.attributes.size > 5
+  end
+
   def test_form_post_with_cookie
     post "/form", :form => { :name => "Joe" }
     assert_equal "Joe <>", last_response.body
@@ -108,9 +114,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal 1, o.products.first.product_id
     assert_equal 2, o.products.last.product_id
   end
-end
 
-=begin
+  def test_bad_entry
+    o = OrderForm.new :shipping => { :address => "cool" }
+  end
+
   def test_hashes
     shipping_hash = { "address1" => "Cocks",   "city" => "Cock City" }
     billing_hash  = { "address1" => "Billing", "city" => "City" }
@@ -202,8 +210,9 @@ class TestMonkeyFormsLintOnHash < MiniTest::Unit::TestCase
   end
 
   def test_name
-    assert_equal "Address",  @model.class.model_name
-    assert_equal "Shipping", @form.shipping.class.model_name
+    assert_equal "cart",     @form.class.model_name.human
+    assert_equal "address",  @model.class.model_name
+    assert_equal "shipping", @form.shipping.class.model_name
     assert_equal "String",   @form.shipping.address.city.class.to_s
     assert_equal "address",  @model.class.model_name.human
   end
@@ -213,7 +222,8 @@ class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 
   def setup
-    o = OrderForm.new :form => { :products => [ {:product_id => 1}, {:product_id => 2}]}
+    skip
+    o = OrderForm.new :form => { :products => [ {:product_id => "1"}, {:product_id => "2"}]}
     @model = o.products.first
   end
 end
@@ -230,7 +240,6 @@ class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
   end
 
   def test_attributes
-    assert_equal @model.attributes, {}
+    assert_equal @model.attributes.to_hash, {}
   end
 end
-=end

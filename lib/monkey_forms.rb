@@ -47,7 +47,7 @@ module MonkeyForms
           # Merge in this form's params
           hash.merge!(form_params.stringify_keys)
 
-          @attribute_container = AttributeContainer.new
+          @attribute_container = AttributeContainer.build "base"
           self.class.attributes.each do |attribute|
             accessor = @attribute_container.add attribute
           end
@@ -93,17 +93,7 @@ module MonkeyForms
 
       # Compatibility with ActiveModel::Naming
       def model_name
-        if !defined?(@_model_name)
-          @_model_name = (@_form_name.try(:to_s) || name.underscore).try(:underscore)
-          %w( singular human i18n_key partial_path plural ).each do |method|
-            @_model_name.class_eval do
-              define_method method do
-                self
-              end
-            end
-          end
-        end
-        @_model_name
+        @_model_name ||= ActiveModelName.build(@_form_name.try(:to_s) || name.underscore.try(:underscore))
       end
 
       def form_name name
