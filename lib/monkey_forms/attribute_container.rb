@@ -38,6 +38,10 @@ module MonkeyForms
       end
     end
 
+    def to_hash
+      @attributes.to_hash
+    end
+
     def respond_to? method, *args
       @attributes[method] || super
     end
@@ -68,7 +72,7 @@ module MonkeyForms
     private
 
     def do_something_with_value value
-      if value.class == String || value.class == Symbol
+      if value.class == String || value.class == Symbol || value.class == TrueClass || value.class == FalseClass
         value
       elsif value.class == Array or value.class == Hash
         AttributeContainer.new(value)

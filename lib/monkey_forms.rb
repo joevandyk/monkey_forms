@@ -61,6 +61,10 @@ module MonkeyForms
       # Debug
       attr_accessor :attribute_container
 
+      def attributes
+        @attribute_container
+      end
+
       def method_missing method, *args, &block
         if @attribute_container.respond_to?(method)
           @attribute_container.send(method)
@@ -70,7 +74,7 @@ module MonkeyForms
       end
 
       def save_to_storage!
-        @options[:attributes] = @attributes
+        @options[:attributes] = @attribute_container.to_hash
         self.class.form_storage.save(@options)
       end
 

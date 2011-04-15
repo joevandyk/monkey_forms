@@ -46,8 +46,9 @@ if ! defined?(OrderForm)
       "#{ shipping.address.address1 }, #{ shipping.address.city }"
     end
 
+    # Can access attributes through the attributes method as well.
     def billing_address
-      "#{ attributes[:billing][:address][:address1] }, #{ attributes[:billing][:address][:city] }"
+      "#{ attributes.billing.address.address1 }, #{ attributes.billing.address.city }"
     end
 
     private
