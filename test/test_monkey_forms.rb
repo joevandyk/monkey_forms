@@ -26,7 +26,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_form_post_with_cookie
-    skip
     post "/form", :form => { :name => "Joe" }
     assert_equal "Joe <>", last_response.body
     post "/form", :form => { :email => "joe@tanga.com" }
@@ -42,7 +41,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     }
 
     get "/shipping-address"
-    skip
     assert_equal "Cocks, Cock City", last_response.body
 
     get "/billing-address"
@@ -226,7 +224,6 @@ class TestMonkeyFormsLintOnArray < MiniTest::Unit::TestCase
   include ActiveModel::Lint::Tests
 
   def setup
-    skip
     o = OrderForm.new :form => { :products => [ {:product_id => "1"}, {:product_id => "2"}]}
     @model = o.products.first
   end

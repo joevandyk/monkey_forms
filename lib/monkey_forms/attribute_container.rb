@@ -50,7 +50,11 @@ module MonkeyForms
           @attributes[attribute] = []
           value.each do |v|
             copy.each do |k, v1|
-              v[k] ||= ""
+              begin
+                v[k] ||= ""
+              rescue TypeError
+                #v = ""
+              end
             end
 
             @attributes[attribute] << do_something_with_value(attribute, v)
@@ -64,14 +68,15 @@ module MonkeyForms
         end
       elsif attribute.class == Array
         attribute.each do |a|
-          if a.class == Symbol
+          if a.class == Symbol || a.class == String
+            next if a.blank?
             merge a, do_something_with_value(a, value)
           elsif a.class == Hash
             a.each do |key, value|
               merge key, do_something_with_value(key, value)
             end
           else
-            fail a.inspect
+            fail a.class.to_s
           end
         end
       else
