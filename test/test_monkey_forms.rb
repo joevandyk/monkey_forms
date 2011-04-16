@@ -151,9 +151,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_rails_attribute_setting
-    o = OrderForm.new
-    o.billing_attributes.address_attributes.address1 = "New"
-    assert_equal "New", o.billing.address.address1
+    billing_hash  = { "address1" => "Billing", "city" => "City" }
+    o = OrderForm.new :form => {
+      :billing_attributes  => { :address_attributes => billing_hash }
+    }
+    assert_equal "Billing", o.billing.address.address1
   end
 
   def test_initialization

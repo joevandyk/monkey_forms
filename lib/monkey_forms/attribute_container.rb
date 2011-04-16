@@ -41,6 +41,9 @@ module MonkeyForms
     end
 
     def add attribute, value = ""
+      if attribute =~ /_attributes$/
+        attribute = attribute.to_s.gsub(/_attributes$/, '')
+      end
       if attribute.class == String
         attribute = attribute.to_sym
       end
@@ -53,7 +56,6 @@ module MonkeyForms
               begin
                 v[k] ||= ""
               rescue TypeError
-                #v = ""
               end
             end
 
@@ -64,6 +66,7 @@ module MonkeyForms
         end
       elsif attribute.class == Hash || attribute.class == ActiveSupport::HashWithIndifferentAccess
         attribute.each do |key, value|
+          key = key.to_s.gsub(/_attributes$/, '')
           merge key, do_something_with_value(key, value)
         end
       elsif attribute.class == Array
