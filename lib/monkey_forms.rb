@@ -55,6 +55,8 @@ module MonkeyForms
           hash.each do |key, value|
             @attribute_container.add(key, value)
           end
+
+          set_methods
         end
       end
 
@@ -65,21 +67,22 @@ module MonkeyForms
         @attribute_container
       end
 
-      def respond_to? *args
-        @attribute_container.respond_to?(*args) || super
-      end
-
-      def method_missing method, *args, &block
-        if @attribute_container.respond_to?(method)
-          @attribute_container.send(method, *args, &block)
-        else
-          super
-        end
-      end
-
       def save_to_storage!
         @options[:attributes] = @attribute_container.to_hash
         self.class.form_storage.save(@options)
+      end
+
+      private
+
+      def set_methods
+        attributes.keys.each do |key|
+          class_eval do
+            delegate key,                  :to => :attributes
+            delegate "#{key}=",            :to => :attributes
+            delegate "#{key}_attributes",  :to => :attributes
+            delegate "#{key}_attributes=", :to => :attributes
+          end
+        end
       end
 
     end

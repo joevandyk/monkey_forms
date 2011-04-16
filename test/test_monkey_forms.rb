@@ -150,6 +150,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert o.respond_to?("billing_attributes=")
   end
 
+  def test_rails_attribute_setting
+    o = OrderForm.new
+    o.billing_attributes.address_attributes.address1 = "New"
+    assert_equal "New", o.billing.address.address1
+  end
+
   def test_initialization
     o = OrderForm.new
     refute_nil o.shipping
