@@ -8,6 +8,7 @@ require 'test/forms/order_form'
 require 'test/forms/basic_form'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
+=begin
   include Rack::Test::Methods
 
   def app
@@ -54,12 +55,14 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "", o.city
     assert_equal "Joe", o.attributes.name
   end
+=end
 
   class RealBasic
     include MonkeyForms::Form
     form_attributes :name, :email, :age
     form_attributes :gender
     form_attributes :address => [:city, :state, {:phone => [:area, :number]}]
+    form_attributes :products => [:product_id, :quantity, :_list]
   end
 
   def test_null
@@ -71,6 +74,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "", o.address.state
     assert_equal "", o.address.phone.area
     assert_equal "", o.address.phone.number
+    #puts
+    #puts
+    #p o.attributes.keys
+    #p o.products
+    #puts
+    assert_equal [], o.products
   end
 
   def test_basic
@@ -120,6 +129,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
 
     o = OrderForm.new params
 
+    p o.products
     assert_equal 2, o.products.size
     assert_equal "1", o.products.first.product_id
     assert_equal "1", o.products.first.quantity
@@ -127,6 +137,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "2", o.products.last.product_id
     assert_equal "", o.products.last.quantity
   end
+end
+=begin
 
   def test_bad_entry
     o = OrderForm.new :shipping => { :address => "cool" }
@@ -263,3 +275,4 @@ class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
     assert_equal @model.attributes.to_hash, {}
   end
 end
+=end
