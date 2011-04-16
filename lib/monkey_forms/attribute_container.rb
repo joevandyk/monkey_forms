@@ -119,7 +119,12 @@ module MonkeyForms
       @attributes[key] = value
       class_eval do
         define_method key do
-          @attributes[key]
+          a = @attributes[key]
+          if a.respond_to?(:attributes) and a.attributes["_list"]
+            []
+          else
+            a
+          end
         end
 
         define_method "#{key}=" do |value|
