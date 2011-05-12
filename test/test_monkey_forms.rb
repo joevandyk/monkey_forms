@@ -83,8 +83,14 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     attributes = submit_form(:line_items => [ {:id => "new"}])
 
     assert_equal 2, attributes[:line_items].size
-    assert_equal "new",      attributes[:line_items].first[:id]
-    assert_equal "previous", attributes[:line_items].last[:id]
+    assert_equal "previous", attributes[:line_items].first[:id]
+    assert_equal "new",      attributes[:line_items].last[:id]
+  end
+
+  def test_array_update
+    submit_form(:line_items => [ {:id => "first", :quantity => 1}])
+    attributes = submit_form(:line_items => [ {:id => "first", :quantity => 3}])
+    assert_equal "3", attributes[:line_items].last[:quantity]
   end
 
   def extract_attributes request
