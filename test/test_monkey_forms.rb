@@ -7,6 +7,9 @@ require 'test/sinatra/sample_sinatra'
 require 'test/forms/order_form'
 require 'test/forms/basic_form'
 
+# I want to ensure this library works fine with all of ActiveSupport loaded
+require 'active_support/all'
+
 class TestMonkeyForms < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
@@ -80,8 +83,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     attributes = submit_form(:line_items => [ {:id => "new"}])
 
     assert_equal 2, attributes[:line_items].size
-    assert_equal "previous", attributes[:line_items].first[:id]
-    assert_equal "new",      attributes[:line_items].last[:id]
+    assert_equal "new",      attributes[:line_items].first[:id]
+    assert_equal "previous", attributes[:line_items].last[:id]
   end
 
   def extract_attributes request
