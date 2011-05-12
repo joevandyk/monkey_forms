@@ -9,7 +9,7 @@ if ! defined?(OrderForm)
     attr_reader :poop
 
     # Declares a few attributes on the form.
-    form_attributes :name, :email, :city, :state
+    form_attributes :name, :email, :city, :state, :line_items
     custom_attributes :user_id
     form_name :cart
 

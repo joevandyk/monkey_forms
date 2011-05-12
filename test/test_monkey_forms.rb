@@ -26,7 +26,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
-    assert_equal 4, o.attributes.size
+    assert_equal 5, o.attributes.size
     assert_equal "Joe", o.attributes[:name]
     assert_equal "Joe", o.attributes["name"]
   end
@@ -73,6 +73,26 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   def test_can_access_attributes
     o = OrderForm.new :form => { :email => "joe@tanga.com" , :name => "Joe" }
     assert_equal "Joe <joe@tanga.com>", o.person
+  end
+
+  def test_array
+    submit_form(:line_items => [ {:id => "previous"}])
+    attributes = submit_form(:line_items => [ {:id => "new"}])
+
+    assert_equal 2, attributes[:line_items].size
+    assert_equal "previous", attributes[:line_items].first[:id]
+    assert_equal "new",      attributes[:line_items].last[:id]
+  end
+
+  def extract_attributes request
+    serializer = MonkeyForms::Serializers::GzipCookie.new(:name => "order_cookie")
+    serializer.load(:request => request)
+  end
+
+  def submit_form attributes
+    post "/form", :form => attributes
+    post "/form", :form => {} # not sure why the cookies don't get set in last_request without this
+    extract_attributes last_request
   end
 end
 

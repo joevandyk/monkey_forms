@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "monkey_forms"
 
   s.add_dependency('activemodel')
+  s.add_dependency('deep_merge')
   s.add_dependency('grouped_validations', '= 0.3.0')
 
   s.add_development_dependency 'minitest'

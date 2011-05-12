@@ -8,10 +8,11 @@ class MonkeyForms::Serializers::GzipCookie
 
   def load options={}
     request = options[:request]
-    return {} if request.blank?
+    result = ActiveSupport::HashWithIndifferentAccess.new
+    return result if request.blank?
     cookie = request.cookies[@cookie_name]
-    return {} if cookie.blank?
-    ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie)).stringify_keys
+    return result if cookie.blank?
+    result.merge!(ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie)).stringify_keys)
   end
 
   def save options = {}

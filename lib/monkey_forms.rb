@@ -4,6 +4,7 @@ module MonkeyForms
   require 'active_support/hash_with_indifferent_access'
   require 'active_support/core_ext/object/try'
   require 'grouped_validations'
+  require 'deep_merge'
 
   module Form
 
@@ -47,25 +48,18 @@ module MonkeyForms
           end
 
           # Load the saved form from storage
-          hash =
+          @attributes =
             if self.class.form_storage
-              hash = self.class.form_storage.load(@options)
+              self.class.form_storage.load(@options)
             else
-              {}
+              ActiveSupport::HashWithIndifferentAccess.new
             end
 
           # Merge in this form's params
-          hash.merge!(form_params.stringify_keys)
-
-          @attributes = ActiveSupport::HashWithIndifferentAccess.new
+          @attributes.deep_merge!(form_params.stringify_keys)
 
           self.class.attributes.each do |a|
-            @attributes[a] = ""
-          end
-
-          hash.each do |key, value|
-            value.strip! if value.respond_to?(:strip!)
-            @attributes[key] = value
+            @attributes[a] ||= ""
           end
         end
       end
