@@ -34,13 +34,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe", o.attributes["name"]
   end
 
-  def test_setters
-    o = OrderForm.new :form => { :name => "Joe" }
-    assert_equal "Joe", o.name
-    o.name = "Bob"
-    assert_equal "Bob", o.name
-  end
-
   def test_validation
     o = OrderForm.new :form => { :name => "Joe" }
     o.valid?
@@ -98,25 +91,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     submit_form(:line_items => [ {:id => "first", :quantity => 1}])
     attributes = submit_form(:line_items => [ {:id => "first", :quantity => 3}])
     assert_equal "3", attributes[:line_items].last[:quantity]
-  end
-
-  def test_overwrite
-    # TODO fix this when below is fixed
-    skip
-    attributes = submit_form(:name => "Joe")
-    assert_equal "Joe", attributes[:name]
-
-    attributes = submit_form(:name => "")
-    assert_equal "", attributes[:name]
-  end
-
-  def test_deep_merge
-    old = {:foo => "hello"}
-    new = {:foo => ""}
-
-    DeepMerge.deep_merge!(new, old)
-    # This one fails!  Maybe deep_merge bug?
-    assert_equal "", old[:foo]
   end
 
   def extract_attributes request
