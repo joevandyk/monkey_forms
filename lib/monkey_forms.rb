@@ -110,6 +110,9 @@ module MonkeyForms
           define_method attr do
             @attributes[attr.to_s]
           end
+          define_method "#{attr}=" do |value|
+            @attributes[attr.to_s] = value
+          end
         end
       end
 

@@ -22,7 +22,7 @@ if ! defined?(OrderForm)
         :secure => true,
         :httponly => true))
 
-    after_initialize :do_poop
+    after_initialize :do_poop, :set_default_state
 
     # We must submit an email address for the form to validate.
     validates :email, :presence => true
@@ -46,6 +46,12 @@ if ! defined?(OrderForm)
 
     def do_poop
       @poop = true
+    end
+
+    def set_default_state
+      if state.blank?
+        self.state = "WA"
+      end
     end
   end
 

@@ -32,6 +32,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert last_response.headers["Set-Cookie"].include?("test.domain.com")
   end
 
+  def test_setters_from_inside_form
+    a = submit_form :name => 'joe'
+    assert_equal 'WA', a[:state]
+  end
+
   def test_basic
     o = OrderForm.new :form => { :name => "Joe", :email => "joe@tanga.com" }
     assert_equal "Joe", o.name
