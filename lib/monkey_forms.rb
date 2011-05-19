@@ -56,9 +56,7 @@ module MonkeyForms
             end
 
           # Merge in this form's params
-          @attributes = ActiveSupport::HashWithIndifferentAccess.new(
-                          DeepMerge::deep_merge!(form_params.stringify_keys,
-                                                 @attributes))
+          DeepMerge.deep_merge!(form_params, @attributes)
 
           self.class.attributes.each do |a|
             @attributes[a] ||= ""

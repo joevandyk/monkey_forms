@@ -8,7 +8,7 @@ require 'test/forms/order_form'
 require 'test/forms/basic_form'
 
 # I want to ensure this library works fine with all of ActiveSupport loaded
-require 'active_support/all'
+# require 'active_support/all'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
   include Rack::Test::Methods
@@ -92,6 +92,15 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     attributes = submit_form(:line_items => [ {:id => "first", :quantity => 3}])
     assert_equal "3", attributes[:line_items].last[:quantity]
   end
+
+  def test_submit_blank
+    a = submit_form(:name => "Joe", :city => "Seattle")
+    assert_equal "Joe", a[:name]
+
+    a = submit_form(:name => "", :city => "Seattle")
+    assert_equal "", a[:name]
+  end
+
 
   def extract_attributes request
     serializer = MonkeyForms::Serializers::GzipCookie.new(:name => "order_cookie")
