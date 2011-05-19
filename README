@@ -2,6 +2,11 @@ Monkey Forms Overview
 
 # TODO Rewrite this so that it makes sense.
 
+
+NOTE!  You need to use this version of deep_merge for now!
+https://github.com/joevandyk/deep_merge
+
+
 MonkeyForms::Form is an interface / layer between ActionController
 and your Models (or whatever you are saving the data to).
 You could just send an email after they submit the form.
