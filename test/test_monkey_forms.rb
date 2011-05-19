@@ -5,6 +5,7 @@ require 'rack/test'
 
 require 'test/sinatra/sample_sinatra'
 require 'test/forms/order_form'
+require 'test/forms/order_form_child'
 require 'test/forms/basic_form'
 
 # I want to ensure this library works fine with all of ActiveSupport loaded
@@ -35,6 +36,15 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   def test_setters_from_inside_form
     a = submit_form :name => 'joe'
     assert_equal 'WA', a[:state]
+  end
+
+  def test_child_form
+    o = OrderFormChild.new :form => { :child => 'new', :name => 'joe' }
+    assert_equal 'new',  o.child
+    assert_equal 'joe',  o.name
+
+    skip "inheriting form name doesn't work yet" # BUG
+    assert_equal 'cart', o.class.model_name
   end
 
   def test_basic
