@@ -8,7 +8,7 @@ require 'test/forms/order_form'
 require 'test/forms/basic_form'
 
 # I want to ensure this library works fine with all of ActiveSupport loaded
-# require 'active_support/all'
+require 'active_support/all'
 
 class TestMonkeyForms < MiniTest::Unit::TestCase
   include Rack::Test::Methods
