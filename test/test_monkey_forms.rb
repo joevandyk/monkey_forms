@@ -18,10 +18,18 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_form_post_with_cookie
-    post "/form", :form => { :name => "Joe" }
+    post "https://test.domain.com/form", :form => { :name => "Joe" }
     assert_equal "Joe <>", last_response.body
-    post "/form", :form => { :email => "joe@tanga.com" }
+    post "https://test.domain.com/form", :form => { :email => "joe@tanga.com" }
     assert_equal "Joe <joe@tanga.com>", last_response.body
+  end
+
+  def test_form_cookie
+    submit_form :name => "joe"
+    # TODO figure out how to get test the cookie stuff properly
+    assert last_response.headers["Set-Cookie"].include?("HttpOnly")
+    assert last_response.headers["Set-Cookie"].include?("secure")
+    assert last_response.headers["Set-Cookie"].include?("test.domain.com")
   end
 
   def test_basic
@@ -108,8 +116,8 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def submit_form attributes
-    post "/form", :form => attributes
-    post "/form", :form => {} # not sure why the cookies don't get set in last_request without this
+    post "https://test.domain.com/form", :form => attributes
+    post "https://test.domain.com/form", :form => {} # not sure why the cookies don't get set in last_request without this
     extract_attributes last_request
   end
 end

@@ -4,6 +4,9 @@ require 'zlib'
 class MonkeyForms::Serializers::GzipCookie
   def initialize options={}
     @cookie_name = options[:name]
+    @domain      = options[:domain]
+    @secure      = options[:secure]
+    @httponly    = options[:httponly]
   end
 
   def load options={}
@@ -21,7 +24,10 @@ class MonkeyForms::Serializers::GzipCookie
 
     cookie_json = ActiveSupport::JSON.encode(attributes)
     cookie_json = Zlib::Deflate.deflate(cookie_json, Zlib::BEST_COMPRESSION)
-    cookie_hash = { :value => cookie_json }
+    cookie_hash = { :value    => cookie_json,
+                    :httponly => @httponly,
+                    :secure   => @secure,
+                    :domain   => @domain }
     response.set_cookie(@cookie_name, cookie_hash)
   end
 end
