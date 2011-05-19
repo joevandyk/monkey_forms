@@ -1,0 +1,1 @@
+- Forms that inherit from other forms don't seem have their form_name set correctly (according to Rails, anyways).
