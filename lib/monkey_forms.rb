@@ -26,6 +26,11 @@ module MonkeyForms
         false
       end
 
+      # TODO not sure what's best here
+      def html_error_messages
+        errors.full_messages.join("<br />")
+      end
+
       def to_model
         self
       end

@@ -69,6 +69,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal [], o.errors[:email]
   end
 
+  def test_html_errors
+    o = OrderForm.new
+    o.valid?
+    assert o.html_error_messages.include?("City can't be blank")
+  end
+
   def test_validation_scope_after_valid_called
     o = OrderForm.new
     refute o.valid?
