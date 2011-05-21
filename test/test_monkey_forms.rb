@@ -43,7 +43,6 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal 'new',  o.child
     assert_equal 'joe',  o.name
 
-    skip "inheriting form name doesn't work yet" # BUG
     assert_equal 'cart', o.class.model_name
   end
 

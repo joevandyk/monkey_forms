@@ -86,7 +86,10 @@ module MonkeyForms
       # Compatibility with ActiveModel::Naming
       def model_name
         if !defined?(@_model_name)
-          @_model_name = (@_form_name.try(:to_s) || name.underscore).try(:underscore)
+          # EWWWW
+          @_model_name = (@_form_name.try(:to_s) ||
+                          superclass.instance_variable_get(:@_form_name).try(:to_s) ||
+                          name.underscore).try(:underscore)
           %w( singular human i18n_key partial_path plural ).each do |method|
             @_model_name.class_eval do
               define_method method do
