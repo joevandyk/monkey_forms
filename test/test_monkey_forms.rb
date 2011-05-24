@@ -131,7 +131,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
 
 
   def extract_attributes request
-    serializer = MonkeyForms::Serializers::GzipCookie.new(:name => "order_cookie")
+    serializer = MonkeyForms::Serializers::MessagePackJson.new(:name => "order_cookie")
     serializer.load(:request => request)
   end
 
