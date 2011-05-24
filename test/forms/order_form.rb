@@ -6,7 +6,7 @@ if ! defined?(OrderForm)
 
   class OrderForm
     include MonkeyForms::Form
-    attr_reader :poop
+    attr_reader :an_attribute
 
     # Declares a few attributes on the form.
     form_attributes :name, :email, :city, :state, :line_items
@@ -22,7 +22,7 @@ if ! defined?(OrderForm)
         :secure => true,
         :httponly => true))
 
-    after_initialize :do_poop, :set_default_state
+    after_initialize :set_attribute, :set_default_state
 
     # We must submit an email address for the form to validate.
     validates :email, :presence => true
@@ -44,8 +44,8 @@ if ! defined?(OrderForm)
 
     private
 
-    def do_poop
-      @poop = true
+    def set_attribute
+      @an_attribute = true
     end
 
     def set_default_state

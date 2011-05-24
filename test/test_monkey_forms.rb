@@ -93,7 +93,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
 
   def test_after_initialize
     o = OrderForm.new
-    assert o.poop
+    assert o.an_attribute
   end
 
   def test_set_custom_attributes
