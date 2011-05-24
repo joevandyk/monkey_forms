@@ -139,17 +139,9 @@ rackup config.ru
 Moving the form logic to a separate class has a ton of advantages:
 
 * Keeps the controller really simple.  
-
 * Makes it easier to test. You can write tests directly against the form handling class.
-
 * Classes should do one thing.
-
 * You can have complex validations.
-
 * Your ActiveRecord models can probably become simpler.
-
-* Since the form handling logic is encapsulated into one class, you can use 
-  inheritance, modules, etc.
-
-* You want to move away from ActiveRecord? It's no problem -- just change how the 
-  form values are saved in the #save method.
+* Since the form handling logic is encapsulated into one class, you can use inheritance, modules, etc.
+* You want to move away from ActiveRecord? It's no problem -- just change how the form values are saved in the #save method.
