@@ -25,6 +25,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe <joe@tanga.com>", last_response.body
   end
 
+  def test_attribute_name
+    o = OrderForm.new
+    o.valid?
+    assert o.errors.full_messages.include?("Your Name can't be blank")
+  end
+
   def test_form_cookie
     submit_form :name => "joe"
     # TODO figure out how to get test the cookie stuff properly

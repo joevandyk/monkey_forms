@@ -27,6 +27,8 @@ if ! defined?(OrderForm)
     # We must submit an email address for the form to validate.
     validates :email, :presence => true
 
+    set_form_attribute_human_names :name => "Your Name"
+
     validation_group :cart do
       # Scope some of the validation checks
       validates :name, :presence => true

@@ -109,6 +109,15 @@ module MonkeyForms
         @form_storage = storage_object
       end
 
+      def set_form_attribute_human_names options
+        @_form_attribute_names ||= {}
+        @_form_attribute_names.merge!(options)
+      end
+
+      def human_attribute_name name, *options
+        @_form_attribute_names[name] || super
+      end
+
       def form_attributes *attrs
         @attributes ||= []
         attrs.each do |attr|
