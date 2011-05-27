@@ -31,6 +31,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert o.errors.full_messages.include?("Your Name can't be blank")
   end
 
+  def test_form_works_without_human_names_set
+    o = BasicForm.new
+    o.valid?
+    assert o.errors.full_messages.include?("Name can't be blank")
+  end
+
   def test_form_cookie
     submit_form :name => "joe"
     # TODO figure out how to get test the cookie stuff properly
@@ -172,6 +178,6 @@ class TestMonkeyFormsBasic < MiniTest::Unit::TestCase
   end
 
   def test_attributes
-    assert_equal @model.attributes, {}
+    assert_equal @model.attributes, {"name" => ""}
   end
 end

@@ -115,6 +115,7 @@ module MonkeyForms
       end
 
       def human_attribute_name name, *options
+        @_form_attribute_names ||= {}
         @_form_attribute_names[name] || super
       end
 
