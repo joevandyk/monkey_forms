@@ -16,7 +16,7 @@ if ! defined?(OrderForm)
     # This form serializes the submit into a gzip'd cookie with a name
     # of 'order_cookie'.
     set_form_storage(
-      MonkeyForms::Serializers::MessagePackJson.new(
+      MonkeyForms::Serializers::GzipCookie.new(
         :name => 'order_cookie',
         :domain => 'test.domain.com',
         :secure => true,
