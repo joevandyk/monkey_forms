@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'zlib'
 
 # Saves form as cookie as json+gzip
@@ -14,7 +15,7 @@ class MonkeyForms::Serializers::GzipCookie
     result = ActiveSupport::HashWithIndifferentAccess.new
     return result if request.blank?
     cookie = request.cookies[@cookie_name]
-    return result if cookie.blank?
+    return result if cookie.nil?
     result.merge!(ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie)).stringify_keys)
   end
 
