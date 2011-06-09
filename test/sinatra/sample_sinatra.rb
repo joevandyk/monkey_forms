@@ -1,5 +1,5 @@
 require 'sinatra/base'
-require File.join(File.dirname(__FILE__), '..', 'forms', 'order_form')
+require 'forms/order_form'
 
 class SampleSinatra < Sinatra::Base
   #set :show_exceptions, false

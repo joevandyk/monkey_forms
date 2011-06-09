@@ -3,10 +3,10 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'rack/test'
 
-require './test/sinatra/sample_sinatra'
-require './test/forms/order_form'
-require './test/forms/order_form_child'
-require './test/forms/basic_form'
+require 'sinatra/sample_sinatra'
+require 'forms/order_form'
+require 'forms/order_form_child'
+require 'forms/basic_form'
 
 # I want to ensure this library works fine with all of ActiveSupport loaded
 require 'active_support/all'
