@@ -17,6 +17,7 @@ MonkeyForms supports multi-page wizards and validation groups.
       
       validates :name, :presence => true
 
+      # Save the data however you want.
       def save
         address = Address.new(:street => address, :city => city, :state => state, :zip => zip)
         OrderService.place_order(:the_name => name, :address => address)
@@ -24,7 +25,7 @@ MonkeyForms supports multi-page wizards and validation groups.
     end
 
 
-    In controllers:
+    In your controller:
       def new
         @cart = OrderForm.new
       end
@@ -39,6 +40,13 @@ MonkeyForms supports multi-page wizards and validation groups.
       end
     end
 
+    In your view:
+      = form_for @cart do |f|
+        = f.text_field :name
+        = f.text_field :address
+        = f.text_field :city
+        = # etc
+        = f.submit
 
 
 A more complex multi-page order process.
