@@ -9,6 +9,7 @@ saving the data to).
 
 MonkeyForms supports multi-page wizards and validation groups.
 
+
     class OrderForm
       include MonkeyForms::Form
       form_name 'cart'

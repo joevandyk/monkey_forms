@@ -15,7 +15,7 @@ class MonkeyForms::Serializers::GzipCookie
     result = ActiveSupport::HashWithIndifferentAccess.new
     return result if request.blank?
     cookie = request.cookies[@cookie_name]
-    return result if cookie.nil? or cookie.empty?
+    return result if cookie.nil?
     result.merge!(ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie)).stringify_keys)
   end
 
