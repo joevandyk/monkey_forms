@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency('activemodel')
   s.add_dependency('deep_merge')
-  s.add_dependency('grouped_validations')
 
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'rake'
