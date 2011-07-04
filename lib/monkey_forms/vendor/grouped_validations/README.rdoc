@@ -1,0 +1,146 @@
+= Grouped Validations
+
+Allows you to define ActiveModel validation groups for more control over what validations you want to run.
+
+This can be useful for multi-page forms or wizard style data entry.
+
+Works with Rails 3.
+
+For Rails 2.x support, try version 0.2.2.
+
+== Installation
+
+Just install the gem
+
+ gem install grouped_validations
+
+Add it to your Rails environment gems
+
+  config.gem 'grouped_validations'
+
+
+== Usage
+
+Define validations as you would normally but inside a validation_group block which you pass a group
+name to.
+
+  class Person < ActiveRecord::Base
+    validation_group :name do
+      validates_presence_of :first_name
+      validates_presence_of :last_name
+    end
+
+    validates_presence_of :sex
+  end
+
+You can define validations outside the group as normal.
+
+To check for errors for only a certain group of validations
+
+  p = Person.new
+  p.group_valid?(:name) # => false
+  p.first_name = 'John'
+  p.last_name = 'Smith'
+  p.group_valid?(:name) # => true
+
+If you run the normal valid? method all validations, inside and outside validation groups, will be run.
+
+  p.valid? # => false because sex is not present
+
+You can also check validation for multiple groups
+
+  p.groups_valid?(:group1, :group2)
+
+
+To define validation blocks just use the respective group validation method, like so
+
+  class Person < ActiveRecord::Base
+    validation_group :name do
+      validates_presence_of :first_name
+      validates_presence_of :last_name
+    end
+
+    validate_name           {|r| # something custom on save }
+    validate_name_on_create {|r| # something custom on create }
+    validate_name_on_update {|r| # something custom on update }
+  end
+
+
+== Group Options
+
+You can use a validation group like similar to the with_options method, but for validation methods only.
+
+If you pass in an options hash, those options will be applied to each valiation method in the block.
+
+  validation_group :name, :if => :ready? do
+    validates_presence_of :first_name
+    validates_presence_of :last_name
+  end
+
+Which effectively the same as doing the following:
+
+    validates_presence_of :first_name, :if => :ready?
+    validates_presence_of :last_name, :if => :ready?
+
+If you set an option for a specific validation method, it will not be overriden with the validation group
+options.
+
+  validation_group :name, :if => :ready? do
+    validates_presence_of :first_name
+    validates_presence_of :last_name, :if => {|r| !r.popstar? }
+  end
+
+The last_name attribute will be required unless the person is a popstar.
+
+The options should work for any validation method which calls the validate class method internally. This includes
+all the default validations.
+
+For more precision on when to merge the groups options you can pass an argument to the block and use it like a
+with_options call. Then only those validation methods call on the argument will have the options merged in.
+
+  validation_group :name, :if => :ready? do |options|
+    # Options merged
+    options.validates_presence_of :first_name
+
+    # No options merged
+    validates_presence_of :last_name
+  end
+
+
+== Grouped Errors
+
+The errors for the model can be returned as hash with the group names as the keys. If you have a number of groups
+you can deal with the error messages in specific ways per group.
+
+  validation_group :name do
+    validates_presence_of :first_name
+    validates_presence_of :last_name
+  end
+
+  validates_presence_of :sex
+
+To access all errors outside of a validation group, use nil as the key:
+
+  person.grouped_errors[nil]
+
+Use the group name as the key for all errors in that group:
+
+  person.grouped_errors[:name]
+
+Be aware that the validations will all be run. If you have just called <tt>valid?</tt> then the same validations will be run
+again and the current state of the object is used. This is for consideration if the validations are expensive, time
+sensitive or you have changed the object after calling <tt>valid?</tt>.
+
+You can use the <tt>grouped_errors</tt> method instead of <tt>valid?</tt> to check on a valid object like so:
+
+  # Validations all run
+  if person.grouped_errors.empty?
+    # object is valid
+  end
+
+
+== Credits
+
+* Adam Meehan (http://github.com/adzap)
+
+Copyright (c) 2010-2011 Adam Meehan, released under the MIT license
