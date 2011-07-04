@@ -1,8 +1,11 @@
+$: << File.expand_path('monkey_forms/vendor/grouped_validations/lib', File.dirname(__FILE__))
+$: << File.expand_path('monkey_forms/vendor/deep_merge/lib', File.dirname(__FILE__))
 module MonkeyForms
   require 'monkey_forms/serializers'
   require 'active_model'
   require 'active_support/hash_with_indifferent_access'
   require 'active_support/core_ext/object/try'
+
   require 'grouped_validations'
   require 'deep_merge'
 
