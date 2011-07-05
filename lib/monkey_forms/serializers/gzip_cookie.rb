@@ -8,7 +8,7 @@ class MonkeyForms::Serializers::GzipCookie
     @domain      = options[:domain]
     @secure      = options[:secure]
     @httponly    = options[:httponly]
-    @path        = options[:path]
+    @path        = options[:path] || '/'
   end
 
   def load options={}
