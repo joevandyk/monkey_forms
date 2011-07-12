@@ -8,6 +8,7 @@ class MonkeyForms::Serializers::GzipCookie
     @domain      = options[:domain]
     @secure      = options[:secure]
     @httponly    = options[:httponly]
+    @path        = options[:path] || '/'
   end
 
   def load options={}
@@ -28,7 +29,8 @@ class MonkeyForms::Serializers::GzipCookie
     cookie_hash = { :value    => cookie_json,
                     :httponly => @httponly,
                     :secure   => @secure,
-                    :domain   => @domain }
+                    :domain   => @domain,
+                    :path     => @path }
     response.set_cookie(@cookie_name, cookie_hash)
   end
 end

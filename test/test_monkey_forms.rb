@@ -42,6 +42,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert last_response.headers["Set-Cookie"].include?("HttpOnly")
     assert last_response.headers["Set-Cookie"].include?("secure")
     assert last_response.headers["Set-Cookie"].include?("test.domain.com")
+    assert last_response.headers["Set-Cookie"].include?("path=/;")
   end
 
   def test_setters_from_inside_form
