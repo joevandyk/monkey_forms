@@ -17,7 +17,11 @@ class MonkeyForms::Serializers::GzipCookie
     return result if request.blank?
     cookie = request.cookies[@cookie_name]
     return result if cookie.nil? or cookie.empty?
-    result.merge!(ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie)).stringify_keys)
+    begin
+      result.merge!(ActiveSupport::JSON.decode(Zlib::Inflate.inflate(cookie)).stringify_keys)
+    rescue Zlib::DataError
+      return result
+    end
   end
 
   def save options = {}

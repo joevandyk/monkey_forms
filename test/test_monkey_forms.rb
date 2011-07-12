@@ -24,6 +24,14 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe <joe@tanga.com>", last_response.body
   end
 
+  def test_form_post_with_bad_cookie
+    post "https://test.domain.com/form", :form => { :name => "Joe" }
+    set_cookie "order_cookie=bad_value; path=/; domain=test.domain.com; secure"
+    post "https://test.domain.com/form", :form => { :name => "Joe" }
+    assert_equal 200, last_response.status
+    skip "i can't get this test to fail. :("
+  end
+
   def test_attribute_name
     o = OrderForm.new
     o.valid?
