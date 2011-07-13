@@ -4,11 +4,11 @@ require 'zlib'
 # Saves form as cookie as json+gzip
 class MonkeyForms::Serializers::GzipCookie
   def initialize options={}
-    @cookie_name = options[:name]
-    @domain      = options[:domain]
+    @cookie_name = options[:name].to_s
+    @domain      = options[:domain].to_s
     @secure      = options[:secure]
     @httponly    = options[:httponly]
-    @path        = options[:path] || '/'
+    @path        = (options[:path] || '/').to_s
   end
 
   def load options={}
