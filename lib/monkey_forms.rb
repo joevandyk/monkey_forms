@@ -93,7 +93,7 @@ module MonkeyForms
           @_model_name = (@_form_name.try(:to_s) ||
                           superclass.instance_variable_get(:@_form_name).try(:to_s) ||
                           name.underscore).try(:underscore)
-          %w( singular human i18n_key partial_path plural ).each do |method|
+          %w( singular human i18n_key partial_path plural param_key).each do |method|
             @_model_name.class_eval do
               define_method method do
                 self
