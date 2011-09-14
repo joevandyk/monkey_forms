@@ -1,8 +1,3 @@
-NOTE!  If you use the cookie serialization feature, you 
-need to use this version of deep_merge for now.
-https://github.com/joevandyk/deep_merge
-
-
 MonkeyForms::Form is an ActiveModel-compliant interface
 between your controllers and models (or whatever you are 
 saving the data to).
