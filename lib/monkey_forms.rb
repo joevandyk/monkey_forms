@@ -1,5 +1,7 @@
 $: << File.expand_path('monkey_forms/vendor/grouped_validations/lib', File.dirname(__FILE__))
 $: << File.expand_path('monkey_forms/vendor/deep_merge/lib', File.dirname(__FILE__))
+
+# Warning: This code is atrocious.
 module MonkeyForms
   require 'monkey_forms/serializers'
   require 'active_model'
