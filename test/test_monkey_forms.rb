@@ -126,6 +126,11 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe <joe@tanga.com>", o.person
   end
 
+  def test_can_access_attributes_stripped
+    o = OrderForm.new :form => { :email => "joe@tanga.com" , :name => " Joe " }
+    assert_equal "Joe <joe@tanga.com>", o.person
+  end
+
   def test_array
     submit_form(:line_items => [ {:id => "previous"}])
     attributes = submit_form(:line_items => [ {:id => "new"}])

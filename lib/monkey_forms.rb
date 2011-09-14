@@ -68,6 +68,9 @@ module MonkeyForms
 
           self.class.attributes.each do |a|
             @attributes[a] ||= ""
+            if self.class.strip_attributes?
+              @attributes[a].strip! if @attributes[a].class == String
+            end
           end
         end
       end
@@ -110,6 +113,15 @@ module MonkeyForms
 
       def set_form_storage storage_object
         @form_storage = storage_object
+      end
+
+      def dont_strip_form_attributes!
+        @_strip_attributes = false
+      end
+
+      def strip_attributes?
+        return true if !defined?(@_strip_attributes)
+        return @_strip_attributes
       end
 
       def set_form_attribute_human_names options
