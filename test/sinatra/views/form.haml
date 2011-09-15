@@ -14,7 +14,7 @@
   As you click from page to page, note that your form
   values are saved. They are saved in a cookie!
 
-%form{:action => '/haml_form', :method => 'post'}
+%form{:action => '/haml_form', :method => 'post', :enctype => 'multipart/form-data'}
   - @form.class.attributes.each do |name|
     %input{:type => 'text', :id => "form_#{name}", :name => "form[#{name}]", :value => @form.send(name)}
     %label{:for => "form_#{name}"}= name

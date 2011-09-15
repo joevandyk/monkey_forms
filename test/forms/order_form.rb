@@ -5,7 +5,7 @@ class OrderForm
   attr_reader :an_attribute
 
   # Declares a few attributes on the form.
-  form_attributes :name, :email, :city, :state, :line_items
+  form_attributes :name, :email, :city, :state, :line_items, :upload
   custom_attributes :user_id
   form_name :cart
 

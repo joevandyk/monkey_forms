@@ -23,6 +23,10 @@ class SampleSinatra < Sinatra::Base
     haml :form
   end
 
+  post "/upload" do
+    @form.upload[:tempfile].read.size.to_s
+  end
+
   post "/haml_form" do
     # We could probably do something with the form object here, maybe
     # Tells the form to serialize itself.

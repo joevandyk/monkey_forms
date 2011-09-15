@@ -24,6 +24,12 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe <joe@tanga.com>", last_response.body
   end
 
+  def test_file_upload
+    file = Rack::Test::UploadedFile.new(__FILE__)
+    post "https://test.domain.com/upload", :form => { :upload => file }
+    assert_equal File.read(__FILE__).size.to_s, last_response.body
+  end
+
   def test_form_post_with_bad_cookie
     post "https://test.domain.com/form", :form => { :name => "Joe" }
     set_cookie "order_cookie=bad_value; path=/; domain=test.domain.com; secure"
@@ -71,7 +77,7 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
     assert_equal "Joe", o.name
     assert_equal "joe@tanga.com", o.email
     assert_equal "", o.city
-    assert_equal 5, o.attributes.size
+    assert_equal 6, o.attributes.size
     assert_equal "Joe", o.attributes[:name]
     assert_equal "Joe", o.attributes["name"]
   end
