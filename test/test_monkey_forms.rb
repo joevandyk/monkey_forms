@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'minitest/pride'
 require 'rack/test'
 
 require 'sinatra/sample_sinatra'
@@ -135,6 +134,10 @@ class TestMonkeyForms < MiniTest::Unit::TestCase
   def test_can_access_attributes_stripped
     o = OrderForm.new :form => { :email => "joe@tanga.com" , :name => " Joe " }
     assert_equal "Joe <joe@tanga.com>", o.person
+  end
+
+  def test_that_values_in_arrays_are_stripped
+    skip "FIX ME!"
   end
 
   def test_array
