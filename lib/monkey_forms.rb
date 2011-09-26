@@ -73,10 +73,10 @@ module MonkeyForms
             if self.class.strip_attributes?
               if @attributes[a].class == String
                 @attributes[a].strip!
-              #elsif @attributes[a].class == Array
-                #@attributes[a].each do |v|
-                  #v.strip! if v.class == String
-                #end
+              elsif @attributes[a].class == Array
+                @attributes[a].each do |v|
+                  v.strip! if v.class == String
+                end
               end
             end
           end
