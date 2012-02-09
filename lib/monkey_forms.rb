@@ -3,41 +3,61 @@ $: << File.expand_path('monkey_forms/vendor/deep_merge/lib', File.dirname(__FILE
 
 # Warning: This code is atrocious.
 module MonkeyForms
-  require 'monkey_forms/serializers'
   require 'active_model'
-  require 'active_support/hash_with_indifferent_access'
-  require 'active_support/core_ext/object/try'
-
-  require 'grouped_validations'
-  require 'deep_merge'
+  require 'deep_merge' # TODO not sure if needed anymore.
+  require 'virtus'
 
   module Form
 
     def self.included base
       base.send :include, ActiveModel::Validations
       base.send :extend,  ActiveModel::Callbacks
+      base.send :include, Virtus
+      base.send :extend, ClassMethods
       base.send :include, InstanceMethods
-      base.send :extend,  ClassMethods
       base.instance_eval do
-        define_model_callbacks :initialize
+        define_model_callbacks :initialize, :save
       end
       base.send :include, ActiveModel::Validations
     end
 
-    module InstanceMethods
-      attr_reader :attributes
+    module ClassMethods
+      def form_attribute name, klass, options={}
+        options[:default] ||=
+          if klass.kind_of?(Array)
+            []
+          elsif klass.respond_to?(:new)
+            klass.new
+          else
+            ""
+          end
+        attribute name, klass, options
+      end
 
+      def validates_associated(*associations)
+        validates_each(associations) do |record, associate_name, value|
+          (value.respond_to?(:each) ? value : [value]).each do |rec|
+            if rec && !rec.valid?
+              rec.errors.each do |key, value|
+                record.errors.add(key, value)
+              end
+            end
+          end
+        end
+      end
+    end
+
+    module InstanceMethods
       def persisted?
         false
       end
 
-      # TODO not sure what's best here
-      def html_error_messages
-        errors.full_messages.join("<br />")
-      end
-
       def to_model
         self
+      end
+
+      def to_partial_path
+        "some_path" # TODO figure out what's needed here for Rails 3.2
       end
 
       def to_param
@@ -48,121 +68,28 @@ module MonkeyForms
         nil
       end
 
-      def initialize options = {}
-        _run_initialize_callbacks do
-          form_params = options.delete(:form) || {}
-          @options    = options
-
-          @options.each do |key, value|
-            instance_variable_set "@#{key}", value
-          end
-
-          # Load the saved form from storage
-          @attributes =
-            if self.class.form_storage
-              self.class.form_storage.load(@options)
-            else
-              ActiveSupport::HashWithIndifferentAccess.new
-            end
-
-          # Merge in this form's params
-          DeepMerge.deep_merge!(form_params, @attributes)
-
-          self.class.attributes.each do |a|
-            @attributes[a] ||= ""
-            if self.class.strip_attributes?
-              if @attributes[a].class == String
-                @attributes[a].strip!
-              elsif @attributes[a].class == Array
-                @attributes[a].each do |v|
-                  v.strip! if v.class == String
-                end
-              end
-            end
+      def save
+        run_callbacks :save do
+          if !valid?
+            return false
           end
         end
+        self
+      end
+
+      def initialize options = {}
+        _run_initialize_callbacks do
+          options[:form] ||= {}
+          options[:form].each do |name, value|
+            self.send "#{name}=", value
+          end
+        end
+        super
       end
 
       def save_to_storage!
-        @options[:attributes] = @attributes
+        @options[:attributes] = attributes
         self.class.form_storage.save(@options)
-      end
-
-    end
-
-    module ClassMethods
-      attr_reader :form_storage
-
-      def attributes
-        @attributes ||= {}
-      end
-
-      # Compatibility with ActiveModel::Naming
-      def model_name
-        if !defined?(@_model_name)
-          # EWWWW
-          @_model_name = (@_form_name.try(:to_s) ||
-                          superclass.instance_variable_get(:@_form_name).try(:to_s) ||
-                          name.underscore).try(:underscore)
-          %w( singular human i18n_key partial_path plural param_key).each do |method|
-            @_model_name.class_eval do
-              define_method method do
-                self
-              end
-            end
-          end
-        end
-        @_model_name
-      end
-
-      def form_name name
-        @_form_name = name
-      end
-
-      def set_form_storage storage_object
-        @form_storage = storage_object
-      end
-
-      def dont_strip_form_attributes!
-        @_strip_attributes = false
-      end
-
-      def strip_attributes?
-        return true if !defined?(@_strip_attributes)
-        return @_strip_attributes
-      end
-
-      def set_form_attribute_human_names options
-        @_form_attribute_names ||= {}
-        @_form_attribute_names.merge!(options)
-      end
-
-      def human_attribute_name name, *options
-        @_form_attribute_names ||= {}
-        @_form_attribute_names[name] || super
-      end
-
-      def form_attributes *attrs
-        @attributes ||= []
-        attrs.each do |attr|
-          @attributes << attr
-
-          # Defines public method
-          define_method attr do
-            @attributes[attr.to_s]
-          end
-          define_method "#{attr}=" do |value|
-            @attributes[attr.to_s] = value
-          end
-        end
-      end
-
-      def custom_attributes *attrs
-        attrs.each do |attr|
-          instance_eval do
-            attr_reader attr
-          end
-        end
       end
     end
   end
