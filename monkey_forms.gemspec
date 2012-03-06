@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "monkey_forms"
 
   s.add_dependency('activemodel')
+  s.add_dependency('virtus')
 
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'rake'
