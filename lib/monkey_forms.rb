@@ -1,4 +1,8 @@
 # Warning: This code is atrocious.
+#
+# ActiveModel is sorta confusing in Rails 3.2.  I think
+# it's improved in 4.0?
+#
 $: << File.expand_path('monkey_forms/vendor/grouped_validations/lib', File.dirname(__FILE__))
 $: << File.expand_path('monkey_forms/vendor/deep_merge/lib', File.dirname(__FILE__))
 
@@ -115,7 +119,7 @@ module MonkeyForms
         _run_initialize_callbacks do
           options[:form] ||= {}
           options[:form].each do |name, value|
-            self.send "#{name}=", value
+            self.send "#{name}=", value.strip
           end
         end
         super

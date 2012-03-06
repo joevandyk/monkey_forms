@@ -1,5 +1,45 @@
+require 'monkey_forms'
 require 'minitest/autorun'
-require 'forms/basic_form'
+
+class Address
+  include MonkeyForms::Form
+  form_attribute :name, String
+  form_attribute :city, String
+  validates :name, :city, :presence => true
+end
+
+class LineItem
+  include MonkeyForms::Form
+  form_attribute :product_id, Integer
+  form_attribute :quantity, Integer
+end
+
+class BasicForm
+  include MonkeyForms::Form
+  form_name :cart
+
+  form_attribute :email, String
+  form_attribute :age, Integer
+  validates :email, :presence => true
+end
+
+class BasicFormWithAssociations < BasicForm
+  form_attribute :line_items, Array[LineItem]
+  form_attribute :shipping_address, Address
+  form_attribute :billing_address, Address
+  form_attribute :age, Integer, :default => 18
+  validates_associated :shipping_address
+end
+
+class BasicFormSaving < BasicForm
+  attr_accessor :i_got_saved
+  after_save :save_success
+
+  private
+  def save_success
+    @i_got_saved = true
+  end
+end
 
 class TestNewMonkeyForms < MiniTest::Unit::TestCase
   def test_basic
@@ -8,6 +48,21 @@ class TestNewMonkeyForms < MiniTest::Unit::TestCase
 
     f.email = "joe@tanga.com"
     assert f.valid?
+  end
+
+  # In general, you want form inputs to have the extra whitespace
+  # at the start and end stripped out.
+  def test_strips_form_inputs
+    f = BasicForm.new(:form => { :age => " 3 \r\n", :email => ' joe@tanga.com '})
+    assert_equal 3, f.age
+    assert_equal 'joe@tanga.com', f.email
+  end
+
+  # For stuff not provided through a form, we don't strip any of the values.
+  def test_doesnt_strips_non_form_inputs
+    f = BasicForm.new(:age => " 3 \r\n", :email => ' joe@tanga.com ')
+    assert_equal " 3 \r\n", f.age
+    assert_equal ' joe@tanga.com ', f.email
   end
 
   def test_conversion
@@ -29,10 +84,11 @@ class TestNewMonkeyForms < MiniTest::Unit::TestCase
   def test_children
     f = BasicFormWithAssociations.new(
       :age => '3',
-      :line_items => [{:product_id => 1, :quantity => 2}],
+      :line_items => [{:product_id => "1", :quantity => "2"}],
       :shipping_address => { :name => 'Joe', :city => "Seattle"}
     )
     assert_equal 2, f.line_items.first.quantity
+    assert_equal 1, f.line_items.first.product_id
     assert_equal "Seattle", f.shipping_address.city
   end
 
@@ -65,7 +121,8 @@ class TestNewMonkeyForms < MiniTest::Unit::TestCase
   end
 
   def test_saving_success
-    f = BasicFormSaving.new(:name => 'joe', :email => 'joe@tanga.com').tap(&:save)
+    f = BasicFormSaving.new(:name => 'joe', :email => 'joe@tanga.com')
+    f.save
     assert_equal true, f.i_got_saved
   end
 end
