@@ -25,21 +25,35 @@ module MonkeyForms
 
     module ClassMethods
       def form_name name
-        self._form_name = name.to_s
+        name = name.to_s
 
-        def _form_name.i18n_key
+        def name.i18n_key
+          self
+        end
+
+        def name.human
+          self
+        end
+
+        def name.singular
+          self
+        end
+
+        def name.plural
           self
         end
 
         self.class.instance_eval do
           define_method :model_name do
-            self._form_name
+            name
           end
         end
+
+        self._form_name = name
       end
 
       def model_name
-        self._form_name
+        self._form_name || super
       end
 
       def form_attribute name, klass, options={}
