@@ -1,11 +1,12 @@
+# Warning: This code is atrocious.
 $: << File.expand_path('monkey_forms/vendor/grouped_validations/lib', File.dirname(__FILE__))
 $: << File.expand_path('monkey_forms/vendor/deep_merge/lib', File.dirname(__FILE__))
 
-# Warning: This code is atrocious.
 module MonkeyForms
   require 'active_model'
   require 'deep_merge' # TODO not sure if needed anymore.
   require 'virtus'
+  require 'active_support/core_ext/class/attribute'
 
   module Form
 
@@ -17,11 +18,30 @@ module MonkeyForms
       base.send :include, InstanceMethods
       base.instance_eval do
         define_model_callbacks :initialize, :save
+        class_attribute :_form_name
       end
       base.send :include, ActiveModel::Validations
     end
 
     module ClassMethods
+      def form_name name
+        self._form_name = name.to_s
+
+        def _form_name.i18n_key
+          self
+        end
+
+        self.class.instance_eval do
+          define_method :model_name do
+            self._form_name
+          end
+        end
+      end
+
+      def model_name
+        self._form_name
+      end
+
       def form_attribute name, klass, options={}
         options[:default] ||=
           if klass.kind_of?(Array)

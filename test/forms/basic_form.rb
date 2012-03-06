@@ -28,6 +28,7 @@ end
 
 class BasicForm
   include MonkeyForms::Form
+  form_name :cart
 
   form_attribute :email, String
   form_attribute :age, Integer

@@ -78,7 +78,6 @@ class TestMonkeyFormsActiveModelLint < MiniTest::Unit::TestCase
   end
 
   def test_form_name
-    skip
     assert_equal "cart", @model.class.model_name
   end
 end
