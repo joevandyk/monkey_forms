@@ -2,6 +2,13 @@ MonkeyForms::Form is an ActiveModel-compliant interface
 between your controllers and models (or whatever you are 
 saving the data to).
 
+
+NOTE
+There is a much better version at 
+http://github.com/joevandyk/cat_forms.  
+Attribute handling is greatly improved.
+
+
 MonkeyForms supports multi-page wizards and validation groups.
 
     class OrderForm
