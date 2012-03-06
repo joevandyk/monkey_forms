@@ -48,6 +48,10 @@ module MonkeyForms
         nil
       end
 
+      def to_partial_path
+        ""
+      end
+
       def initialize options = {}
         _run_initialize_callbacks do
           form_params = options.delete(:form) || {}
